@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PathForge — Hamiltonian Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg0: #04060f;
+  --bg1: #080c1a;
+  --bg2: #0d1225;
+  --bg3: #111930;
+  --glass: rgba(13,18,37,0.7);
+  --border: rgba(99,120,255,0.18);
+  --border2: rgba(99,120,255,0.35);
+  --neon-blue: #4f8eff;
+  --neon-cyan: #00e5ff;
+  --neon-purple: #a259ff;
+  --neon-green: #00ff88;
+  --neon-red: #ff3366;
+  --neon-amber: #ffaa00;
+  --text-primary: #e8eeff;
+  --text-secondary: #8899cc;
+  --text-muted: #445577;
+  --font-display: 'Orbitron', monospace;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg0);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg1)}
+::-webkit-scrollbar-thumb{background:var(--neon-blue);border-radius:2px}
+
+/* NAVBAR */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:60px;
+  background:rgba(4,6,15,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:var(--font-display);
+  font-size:1.1rem;font-weight:700;
+  background:linear-gradient(135deg,var(--neon-blue),var(--neon-cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:2px;cursor:pointer;
+}
+.nav-links{display:flex;gap:0.25rem}
+.nav-link{
+  padding:0.4rem 0.9rem;border-radius:6px;
+  font-size:0.8rem;font-weight:500;cursor:pointer;
+  color:var(--text-secondary);transition:all 0.2s;
+  border:1px solid transparent;letter-spacing:0.5px;
+  text-transform:uppercase;font-family:var(--font-display);font-size:0.65rem;
+}
+.nav-link:hover,.nav-link.active{
+  color:var(--neon-cyan);border-color:var(--border2);
+  background:rgba(79,142,255,0.08);
+}
+
+/* PAGES */
+.page{display:none;padding-top:60px;min-height:100vh}
+.page.active{display:block}
+
+/* =================== HOME PAGE =================== */
+#page-home{position:relative;overflow:hidden}
+#hero-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.5}
+.hero{
+  position:relative;z-index:1;
+  min-height:calc(100vh - 60px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:4rem 2rem;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  padding:0.35rem 1rem;border-radius:20px;
+  background:rgba(79,142,255,0.1);border:1px solid var(--border2);
+  font-size:0.72rem;font-family:var(--font-mono);color:var(--neon-cyan);
+  margin-bottom:1.5rem;letter-spacing:1px;
+}
+.hero-badge span{width:6px;height:6px;border-radius:50%;background:var(--neon-green);display:inline-block;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.7)}}
+.hero h1{
+  font-family:var(--font-display);
+  font-size:clamp(2.5rem,6vw,5rem);
+  font-weight:900;line-height:1.05;
+  margin-bottom:1rem;letter-spacing:-1px;
+}
+.hero h1 .line1{display:block;color:var(--text-primary)}
+.hero h1 .line2{
+  display:block;
+  background:linear-gradient(135deg,var(--neon-blue) 0%,var(--neon-purple) 50%,var(--neon-cyan) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--text-secondary);
+  max-width:560px;line-height:1.7;margin-bottom:2.5rem;
+}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-bottom:3.5rem}
+.btn-primary{
+  padding:0.75rem 2rem;border-radius:8px;border:none;cursor:pointer;
+  font-family:var(--font-display);font-size:0.75rem;font-weight:700;letter-spacing:1.5px;
+  background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));
+  color:#fff;transition:all 0.25s;text-transform:uppercase;
+  box-shadow:0 0 20px rgba(79,142,255,0.3);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 30px rgba(79,142,255,0.5)}
+.btn-secondary{
+  padding:0.75rem 2rem;border-radius:8px;cursor:pointer;
+  font-family:var(--font-display);font-size:0.75rem;font-weight:700;letter-spacing:1.5px;
+  background:transparent;color:var(--neon-cyan);
+  border:1px solid var(--neon-cyan);transition:all 0.25s;text-transform:uppercase;
+}
+.btn-secondary:hover{background:rgba(0,229,255,0.08);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,229,255,0.2)}
+.stats-strip{
+  display:flex;gap:3rem;flex-wrap:wrap;justify-content:center;
+  padding:1.5rem 2rem;border-radius:12px;
+  background:var(--glass);border:1px solid var(--border);
+  backdrop-filter:blur(20px);
+}
+.stat-item{text-align:center}
+.stat-num{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--neon-blue)}
+.stat-label{font-size:0.72rem;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+.home-concept{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1.25rem;padding:3rem 2rem;max-width:1200px;margin:0 auto;
+}
+.concept-card{
+  padding:1.5rem;border-radius:12px;
+  background:var(--glass);border:1px solid var(--border);
+  backdrop-filter:blur(20px);transition:all 0.3s;cursor:pointer;
+}
+.concept-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 8px 30px rgba(79,142,255,0.1)}
+.concept-icon{
+  width:42px;height:42px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:1rem;
+}
+.concept-card h3{font-family:var(--font-display);font-size:0.85rem;color:var(--neon-cyan);margin-bottom:0.5rem;letter-spacing:1px}
+.concept-card p{font-size:0.85rem;color:var(--text-secondary);line-height:1.6}
+
+/* =================== GRAPH BUILDER =================== */
+#page-builder{display:none}
+#page-builder.active{display:flex;flex-direction:column}
+.builder-layout{
+  display:flex;height:calc(100vh - 60px);overflow:hidden;
+}
+.builder-sidebar{
+  width:280px;min-width:280px;
+  background:var(--bg1);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;
+  padding:1.25rem;gap:1rem;
+}
+.sidebar-title{
+  font-family:var(--font-display);font-size:0.7rem;
+  color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;
+  padding-bottom:0.5rem;border-bottom:1px solid var(--border);
+}
+.sidebar-section{margin-bottom:0.5rem}
+.sidebar-section .sidebar-title{margin-bottom:0.75rem}
+.ctrl-btn{
+  width:100%;padding:0.6rem 1rem;border-radius:8px;border:none;cursor:pointer;
+  font-family:var(--font-display);font-size:0.65rem;font-weight:600;letter-spacing:1px;
+  text-transform:uppercase;transition:all 0.2s;margin-bottom:0.4rem;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.ctrl-btn-blue{background:rgba(79,142,255,0.15);color:var(--neon-blue);border:1px solid rgba(79,142,255,0.3)}
+.ctrl-btn-blue:hover{background:rgba(79,142,255,0.25);border-color:var(--neon-blue)}
+.ctrl-btn-cyan{background:rgba(0,229,255,0.1);color:var(--neon-cyan);border:1px solid rgba(0,229,255,0.25)}
+.ctrl-btn-cyan:hover{background:rgba(0,229,255,0.2);border-color:var(--neon-cyan)}
+.ctrl-btn-purple{background:rgba(162,89,255,0.12);color:var(--neon-purple);border:1px solid rgba(162,89,255,0.3)}
+.ctrl-btn-purple:hover{background:rgba(162,89,255,0.22);border-color:var(--neon-purple)}
+.ctrl-btn-green{background:rgba(0,255,136,0.1);color:var(--neon-green);border:1px solid rgba(0,255,136,0.25)}
+.ctrl-btn-green:hover{background:rgba(0,255,136,0.2);border-color:var(--neon-green)}
+.ctrl-btn-red{background:rgba(255,51,102,0.1);color:var(--neon-red);border:1px solid rgba(255,51,102,0.25)}
+.ctrl-btn-red:hover{background:rgba(255,51,102,0.2);border-color:var(--neon-red)}
+.ctrl-btn-active{background:rgba(79,142,255,0.3)!important;border-color:var(--neon-blue)!important}
+.mode-indicator{
+  padding:0.5rem 0.75rem;border-radius:6px;font-size:0.75rem;
+  font-family:var(--font-mono);
+  background:rgba(0,229,255,0.08);border:1px solid var(--border);
+  color:var(--text-secondary);
+}
+.mode-indicator span{color:var(--neon-cyan);font-weight:500}
+.step-panel{
+  padding:0.75rem;border-radius:8px;
+  background:rgba(0,0,0,0.3);border:1px solid var(--border);
+  font-size:0.78rem;font-family:var(--font-mono);
+  color:var(--text-secondary);max-height:200px;overflow-y:auto;
+  line-height:1.8;
+}
+.step-line{padding:2px 0;border-bottom:1px solid rgba(99,120,255,0.08)}
+.step-line:last-child{border-bottom:none}
+.step-ok{color:var(--neon-green)}
+.step-err{color:var(--neon-red)}
+.step-try{color:var(--neon-amber)}
+.step-info{color:var(--neon-cyan)}
+.status-badge{
+  padding:0.5rem 0.75rem;border-radius:8px;
+  font-size:0.78rem;font-family:var(--font-display);font-weight:600;
+  text-align:center;letter-spacing:1px;
+}
+.status-idle{background:rgba(99,120,255,0.1);color:var(--text-secondary);border:1px solid var(--border)}
+.status-found{background:rgba(0,255,136,0.1);color:var(--neon-green);border:1px solid rgba(0,255,136,0.3)}
+.status-none{background:rgba(255,51,102,0.1);color:var(--neon-red);border:1px solid rgba(255,51,102,0.3)}
+.status-running{background:rgba(255,170,0,0.1);color:var(--neon-amber);border:1px solid rgba(255,170,0,0.3)}
+.canvas-wrap{
+  flex:1;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 50%,#0d1830 0%,var(--bg0) 70%);
+}
+#graph-canvas{display:block;width:100%;height:100%;cursor:crosshair}
+.canvas-hint{
+  position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);
+  padding:0.4rem 1rem;border-radius:20px;
+  background:var(--glass);border:1px solid var(--border);
+  font-size:0.72rem;color:var(--text-muted);
+  backdrop-filter:blur(10px);pointer-events:none;
+  white-space:nowrap;font-family:var(--font-mono);
+}
+.progress-dots{display:flex;gap:6px;justify-content:center;padding:0.5rem}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--bg3);border:1px solid var(--border)}
+.dot.active{background:var(--neon-blue);border-color:var(--neon-blue);box-shadow:0 0 6px var(--neon-blue)}
+.dot.done{background:var(--neon-green);border-color:var(--neon-green)}
+
+/* =================== GAME MODE =================== */
+.game-layout{
+  display:flex;height:calc(100vh - 60px);overflow:hidden;
+}
+.game-sidebar{
+  width:260px;min-width:260px;background:var(--bg1);
+  border-right:1px solid var(--border);padding:1.25rem;
+  display:flex;flex-direction:column;gap:1rem;
+}
+.score-card{
+  padding:1rem;border-radius:10px;
+  background:linear-gradient(135deg,rgba(79,142,255,0.15),rgba(162,89,255,0.1));
+  border:1px solid var(--border2);text-align:center;
+}
+.score-num{font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--neon-blue)}
+.score-label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.timer-display{
+  font-family:var(--font-display);font-size:1.4rem;
+  color:var(--neon-cyan);text-align:center;
+  padding:0.5rem;border-radius:8px;
+  background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);
+}
+.diff-pills{display:flex;gap:0.5rem;flex-wrap:wrap}
+.diff-pill{
+  padding:0.35rem 0.75rem;border-radius:20px;font-size:0.7rem;
+  font-family:var(--font-display);font-weight:600;cursor:pointer;
+  border:1px solid var(--border);color:var(--text-muted);
+  transition:all 0.2s;letter-spacing:0.5px;
+}
+.diff-pill.active-easy{background:rgba(0,255,136,0.15);color:var(--neon-green);border-color:var(--neon-green)}
+.diff-pill.active-med{background:rgba(255,170,0,0.15);color:var(--neon-amber);border-color:var(--neon-amber)}
+.diff-pill.active-hard{background:rgba(255,51,102,0.15);color:var(--neon-red);border-color:var(--neon-red)}
+.game-path-display{
+  padding:0.5rem 0.75rem;border-radius:8px;
+  background:rgba(0,0,0,0.3);border:1px solid var(--border);
+  font-family:var(--font-mono);font-size:0.8rem;color:var(--text-secondary);
+  min-height:40px;word-break:break-all;
+}
+.leaderboard-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.4rem 0.5rem;border-radius:6px;font-size:0.78rem;
+  transition:background 0.2s;
+}
+.leaderboard-row:hover{background:rgba(79,142,255,0.05)}
+.lb-rank{font-family:var(--font-display);font-size:0.65rem;color:var(--text-muted);width:20px}
+.lb-name{color:var(--text-primary);font-weight:500}
+.lb-score{font-family:var(--font-mono);color:var(--neon-blue)}
+.game-canvas-wrap{flex:1;position:relative;overflow:hidden}
+#game-canvas{display:block;width:100%;height:100%;cursor:pointer}
+.game-msg{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--font-display);font-size:1.5rem;font-weight:700;
+  padding:1rem 2.5rem;border-radius:12px;
+  text-align:center;pointer-events:none;
+  animation:fade-msg 2s forwards;display:none;
+}
+@keyframes fade-msg{0%{opacity:0;transform:translate(-50%,-60%)}20%{opacity:1;transform:translate(-50%,-50%)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-40%)}}
+.game-msg.success{background:rgba(0,255,136,0.15);color:var(--neon-green);border:1px solid rgba(0,255,136,0.3)}
+.game-msg.error{background:rgba(255,51,102,0.15);color:var(--neon-red);border:1px solid rgba(255,51,102,0.3)}
+.game-msg.win{background:linear-gradient(135deg,rgba(79,142,255,0.2),rgba(162,89,255,0.2));color:var(--neon-cyan);border:1px solid var(--border2)}
+
+/* =================== SIMULATION =================== */
+.sim-layout{padding:1.5rem 2rem;max-width:1400px;margin:0 auto}
+.sim-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.sim-title{font-family:var(--font-display);font-size:1rem;color:var(--neon-cyan);letter-spacing:2px}
+.metrics-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.metric-card{
+  flex:1;min-width:150px;padding:1rem 1.25rem;border-radius:10px;
+  background:var(--glass);border:1px solid var(--border);
+  backdrop-filter:blur(20px);
+}
+.metric-val{font-family:var(--font-display);font-size:1.5rem;font-weight:700}
+.metric-key{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.sim-canvas-wrap{
+  border-radius:12px;border:1px solid var(--border);
+  background:radial-gradient(ellipse at 50% 50%,#0a0f20 0%,var(--bg0) 100%);
+  overflow:hidden;position:relative;
+}
+#sim-canvas{display:block;width:100%;height:420px}
+.sim-controls{display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap}
+
+/* =================== AI SOLVER =================== */
+.ai-layout{display:flex;height:calc(100vh - 60px);overflow:hidden}
+.ai-main{flex:1;position:relative;overflow:hidden}
+#ai-canvas{display:block;width:100%;height:100%}
+.ai-sidebar{
+  width:300px;min-width:300px;background:var(--bg1);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;gap:0;
+  overflow:hidden;
+}
+.ai-log{
+  flex:1;overflow-y:auto;padding:1rem;
+  font-family:var(--font-mono);font-size:0.73rem;
+  line-height:1.9;
+}
+.log-entry{display:flex;gap:0.5rem;padding:2px 0}
+.log-icon{width:16px;text-align:center;flex-shrink:0}
+.log-try{color:var(--neon-amber)}
+.log-ok{color:var(--neon-green)}
+.log-back{color:var(--neon-red)}
+.log-info{color:var(--neon-cyan)}
+.ai-explain{
+  padding:1rem;border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.2);
+  font-size:0.8rem;color:var(--text-secondary);line-height:1.6;
+}
+.ai-explain strong{color:var(--neon-purple);font-family:var(--font-display);font-size:0.7rem;letter-spacing:1px}
+.think-anim{
+  display:flex;gap:4px;align-items:center;padding:0.75rem;
+  border-top:1px solid var(--border);
+}
+.think-dot{width:5px;height:5px;border-radius:50%;background:var(--neon-purple)}
+.think-dot:nth-child(1){animation:think 1.2s 0s infinite}
+.think-dot:nth-child(2){animation:think 1.2s 0.2s infinite}
+.think-dot:nth-child(3){animation:think 1.2s 0.4s infinite}
+@keyframes think{0%,80%,100%{transform:scale(0.8);opacity:0.4}40%{transform:scale(1.3);opacity:1}}
+
+/* =================== LEARN PAGE =================== */
+.learn-layout{max-width:1100px;margin:0 auto;padding:2rem}
+.learn-hero{
+  text-align:center;padding:2.5rem 1rem;margin-bottom:2rem;
+}
+.learn-hero h1{font-family:var(--font-display);font-size:clamp(1.5rem,4vw,2.5rem);margin-bottom:0.75rem;color:var(--neon-cyan)}
+.learn-hero p{color:var(--text-secondary);font-size:0.95rem;max-width:600px;margin:0 auto;line-height:1.7}
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+@media(max-width:700px){.concept-grid{grid-template-columns:1fr}}
+.learn-card{
+  padding:1.5rem;border-radius:12px;
+  background:var(--glass);border:1px solid var(--border);
+  backdrop-filter:blur(20px);
+}
+.learn-card h2{
+  font-family:var(--font-display);font-size:0.85rem;
+  letter-spacing:1.5px;margin-bottom:1rem;
+  padding-bottom:0.5rem;border-bottom:1px solid var(--border);
+}
+.learn-card p{font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem}
+.mini-graph-wrap{height:130px;position:relative;overflow:hidden;border-radius:8px;background:rgba(0,0,0,0.3)}
+.info-strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1rem;margin-bottom:2rem;
+}
+.info-tile{
+  padding:1.25rem;border-radius:10px;
+  background:var(--glass);border:1px solid var(--border);
+}
+.info-tile h3{font-family:var(--font-display);font-size:0.7rem;color:var(--neon-purple);letter-spacing:1px;margin-bottom:0.5rem}
+.info-tile p{font-size:0.82rem;color:var(--text-secondary);line-height:1.6}
+.theorem-box{
+  padding:1.25rem 1.5rem;border-radius:10px;margin-bottom:2rem;
+  background:linear-gradient(135deg,rgba(162,89,255,0.08),rgba(79,142,255,0.08));
+  border:1px solid rgba(162,89,255,0.25);
+}
+.theorem-box h3{font-family:var(--font-display);font-size:0.8rem;color:var(--neon-purple);margin-bottom:0.5rem;letter-spacing:1px}
+.theorem-box p{font-size:0.85rem;color:var(--text-secondary);line-height:1.7}
+.theorem-box em{color:var(--neon-cyan);font-style:normal;font-family:var(--font-mono)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;
+  padding:0.75rem 1.25rem;border-radius:10px;
+  font-size:0.82rem;font-family:var(--font-display);font-weight:600;
+  letter-spacing:0.5px;
+  backdrop-filter:blur(20px);
+  transform:translateY(100px);opacity:0;
+  transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-success{background:rgba(0,255,136,0.15);color:var(--neon-green);border:1px solid rgba(0,255,136,0.3)}
+.toast-error{background:rgba(255,51,102,0.15);color:var(--neon-red);border:1px solid rgba(255,51,102,0.3)}
+.toast-info{background:rgba(79,142,255,0.15);color:var(--neon-blue);border:1px solid rgba(79,142,255,0.3)}
+
+/* NODE/EDGE LABELS */
+.edge-weight{font-family:var(--font-mono);font-size:0.7rem;color:var(--neon-purple)}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">PATHFORGE</div>
+  <div class="nav-links">
+    <div class="nav-link active" data-page="home" onclick="showPage('home')">Home</div>
+    <div class="nav-link" data-page="builder" onclick="showPage('builder')">Builder</div>
+    <div class="nav-link" data-page="game" onclick="showPage('game')">Game</div>
+    <div class="nav-link" data-page="sim" onclick="showPage('sim')">Simulation</div>
+    <div class="nav-link" data-page="ai" onclick="showPage('ai')">AI Solver</div>
+    <div class="nav-link" data-page="learn" onclick="showPage('learn')">Learn</div>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ========== HOME PAGE ========== -->
+<div class="page active" id="page-home">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero">
+    <div class="hero-badge"><span></span>DISCRETE MATHEMATICS · GRAPH THEORY</div>
+    <h1>
+      <span class="line1">Explore Every</span>
+      <span class="line2">Path Possible</span>
+    </h1>
+    <p class="hero-sub">
+      Discover Hamiltonian paths and circuits through interactive graph building,
+      animated algorithms, and real-world simulations.
+    </p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="showPage('builder')">⬡ Start Building</button>
+      <button class="btn-secondary" onclick="showPage('game')">▶ Play Game</button>
+    </div>
+    <div class="stats-strip">
+      <div class="stat-item"><div class="stat-num">NP</div><div class="stat-label">Complexity Class</div></div>
+      <div class="stat-item"><div class="stat-num">1859</div><div class="stat-label">Year Discovered</div></div>
+      <div class="stat-item"><div class="stat-num">O(N!)</div><div class="stat-label">Brute Force</div></div>
+      <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Real-World Uses</div></div>
+    </div>
+  </div>
+  <div class="home-concept">
+    <div class="concept-card" onclick="showPage('builder')">
+      <div class="concept-icon" style="background:rgba(79,142,255,0.15)">⬡</div>
+      <h3>Graph Builder</h3>
+      <p>Create custom graphs, add nodes and edges, then watch the algorithm find Hamiltonian paths with animated traversal.</p>
+    </div>
+    <div class="concept-card" onclick="showPage('game')">
+      <div class="concept-icon" style="background:rgba(0,229,255,0.1)">🎮</div>
+      <h3>Game Mode</h3>
+      <p>Challenge yourself to find the path manually. Race against the clock with three difficulty levels and a live leaderboard.</p>
+    </div>
+    <div class="concept-card" onclick="showPage('sim')">
+      <div class="concept-icon" style="background:rgba(0,255,136,0.1)">🚚</div>
+      <h3>Delivery Simulation</h3>
+      <p>See Hamiltonian paths in action as a delivery truck navigates through city nodes visiting every location once.</p>
+    </div>
+    <div class="concept-card" onclick="showPage('ai')">
+      <div class="concept-icon" style="background:rgba(162,89,255,0.12)">🤖</div>
+      <h3>AI Solver</h3>
+      <p>Watch the backtracking algorithm think in real-time, exploring paths, hitting dead ends, and finding the solution.</p>
+    </div>
+    <div class="concept-card" onclick="showPage('learn')">
+      <div class="concept-icon" style="background:rgba(255,170,0,0.1)">📚</div>
+      <h3>Learn</h3>
+      <p>Understand Hamiltonian paths vs circuits, Ore's theorem, why no solution exists for some graphs, and real-world applications.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== GRAPH BUILDER ========== -->
+<div class="page" id="page-builder">
+  <div class="builder-layout">
+    <div class="builder-sidebar">
+      <div class="sidebar-title">Mode</div>
+      <div style="display:flex;gap:0.4rem;margin-bottom:0.25rem">
+        <button class="ctrl-btn ctrl-btn-blue ctrl-btn-active" id="btn-mode-node" onclick="setMode('node')" style="flex:1;justify-content:center">⬡ Node</button>
+        <button class="ctrl-btn ctrl-btn-cyan" id="btn-mode-edge" onclick="setMode('edge')" style="flex:1;justify-content:center">— Edge</button>
+      </div>
+      <div class="mode-indicator">Mode: <span id="mode-label">Add Node</span></div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Algorithms</div>
+        <button class="ctrl-btn ctrl-btn-purple" onclick="findPath(false)">⚡ Find Hamiltonian Path</button>
+        <button class="ctrl-btn ctrl-btn-purple" onclick="findPath(true)">◎ Find Hamiltonian Circuit</button>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Controls</div>
+        <button class="ctrl-btn ctrl-btn-blue" onclick="generateRandom()">⟳ Random Graph</button>
+        <button class="ctrl-btn ctrl-btn-red" onclick="resetGraph()">✕ Reset Graph</button>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Status</div>
+        <div class="status-badge status-idle" id="algo-status">READY</div>
+      </div>
+
+      <div class="sidebar-section" style="flex:1">
+        <div class="sidebar-title">Algorithm Log</div>
+        <div class="step-panel" id="step-log"><span class="step-info">Click canvas to add nodes. Connect them in Edge mode. Then run the algorithm.</span></div>
+      </div>
+
+      <div>
+        <div class="sidebar-title" style="margin-bottom:0.5rem">Path Progress</div>
+        <div class="progress-dots" id="progress-dots"></div>
+      </div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="graph-canvas"></canvas>
+      <div class="canvas-hint" id="builder-hint">Click to add nodes · Switch to Edge mode to connect</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== GAME MODE ========== -->
+<div class="page" id="page-game">
+  <div class="game-layout">
+    <div class="game-sidebar">
+      <div class="sidebar-title">Score</div>
+      <div class="score-card">
+        <div class="score-num" id="game-score">0</div>
+        <div class="score-label">Points</div>
+      </div>
+      <div class="timer-display" id="game-timer">60s</div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Difficulty</div>
+        <div class="diff-pills">
+          <div class="diff-pill active-easy" onclick="setDifficulty('easy')">Easy</div>
+          <div class="diff-pill" onclick="setDifficulty('medium')">Medium</div>
+          <div class="diff-pill" onclick="setDifficulty('hard')">Hard</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Your Path</div>
+        <div class="game-path-display" id="game-path-display">—</div>
+      </div>
+
+      <div style="display:flex;gap:0.5rem">
+        <button class="ctrl-btn ctrl-btn-blue" onclick="startGame()" style="flex:1;justify-content:center">▶ New Game</button>
+        <button class="ctrl-btn ctrl-btn-red" onclick="resetGamePath()" style="flex:1;justify-content:center">↺ Reset</button>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Leaderboard</div>
+        <div id="leaderboard">
+          <div class="leaderboard-row"><span class="lb-rank">#1</span><span class="lb-name">NeuralGhost</span><span class="lb-score">2840</span></div>
+          <div class="leaderboard-row"><span class="lb-rank">#2</span><span class="lb-name">PathFinder</span><span class="lb-score">2215</span></div>
+          <div class="leaderboard-row"><span class="lb-rank">#3</span><span class="lb-name">GraphMaster</span><span class="lb-score">1980</span></div>
+          <div class="leaderboard-row"><span class="lb-rank">#4</span><span class="lb-name">CyberRoute</span><span class="lb-score">1450</span></div>
+          <div class="leaderboard-row" id="player-row" style="display:none"><span class="lb-rank">You</span><span class="lb-name">Player</span><span class="lb-score" id="player-score">0</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="game-canvas-wrap">
+      <canvas id="game-canvas"></canvas>
+      <div class="game-msg" id="game-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SIMULATION ========== -->
+<div class="page" id="page-sim">
+  <div class="sim-layout">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <div class="sim-title">🚚 DELIVERY ROUTE SIMULATION</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">Hamiltonian path applied to real logistics</div>
+      </div>
+      <div style="display:flex;gap:0.5rem">
+        <button class="ctrl-btn ctrl-btn-blue" onclick="startSimulation()" style="width:auto;padding:0.5rem 1.25rem">▶ Start Route</button>
+        <button class="ctrl-btn ctrl-btn-cyan" onclick="compareRoutes()" style="width:auto;padding:0.5rem 1.25rem">⇄ Compare</button>
+        <button class="ctrl-btn ctrl-btn-red" onclick="resetSim()" style="width:auto;padding:0.5rem 1.25rem">↺ Reset</button>
+      </div>
+    </div>
+    <div class="metrics-row">
+      <div class="metric-card"><div class="metric-val" id="met-dist" style="color:var(--neon-blue)">0 km</div><div class="metric-key">Distance Covered</div></div>
+      <div class="metric-card"><div class="metric-val" id="met-eff" style="color:var(--neon-green)">—</div><div class="metric-key">Route Efficiency</div></div>
+      <div class="metric-card"><div class="metric-val" id="met-houses" style="color:var(--neon-purple)">0/10</div><div class="metric-key">Houses Visited</div></div>
+      <div class="metric-card"><div class="metric-val" id="met-time" style="color:var(--neon-amber)">0s</div><div class="metric-key">Time Elapsed</div></div>
+    </div>
+    <div class="sim-canvas-wrap">
+      <canvas id="sim-canvas"></canvas>
+    </div>
+    <div class="sim-controls">
+      <button class="ctrl-btn ctrl-btn-blue" onclick="setSpeeed(1)" style="width:auto;padding:0.4rem 1rem">1× Speed</button>
+      <button class="ctrl-btn ctrl-btn-blue" onclick="setSpeeed(2)" style="width:auto;padding:0.4rem 1rem">2× Speed</button>
+      <button class="ctrl-btn ctrl-btn-blue" onclick="setSpeeed(0.5)" style="width:auto;padding:0.4rem 1rem">0.5× Speed</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== AI SOLVER ========== -->
+<div class="page" id="page-ai">
+  <div class="ai-layout">
+    <div class="ai-main">
+      <canvas id="ai-canvas"></canvas>
+    </div>
+    <div class="ai-sidebar">
+      <div style="padding:1rem;border-bottom:1px solid var(--border)">
+        <div class="sidebar-title">AI Solver Controls</div>
+        <button class="ctrl-btn ctrl-btn-purple" onclick="startAiSolver()" style="margin-top:0.5rem">⚡ Run Backtracking</button>
+        <button class="ctrl-btn ctrl-btn-blue" onclick="genAiGraph()" style="margin-top:0">⟳ New Graph</button>
+        <button class="ctrl-btn ctrl-btn-red" onclick="resetAi()" style="margin-top:0">↺ Reset</button>
+      </div>
+      <div class="think-anim" id="think-anim" style="display:none">
+        <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
+        <span style="font-size:0.75rem;color:var(--neon-purple);font-family:var(--font-display);letter-spacing:1px;margin-left:4px">THINKING</span>
+      </div>
+      <div class="ai-log" id="ai-log"><span style="color:var(--text-muted);font-size:0.75rem">Click "Run Backtracking" to watch the AI solve the graph step by step.</span></div>
+      <div class="ai-explain" id="ai-explain">
+        <strong>HOW IT WORKS</strong><br><br>
+        The backtracking algorithm starts from node 0 and tries to extend the current path one node at a time. If it hits a dead end, it <em style="color:var(--neon-red);font-style:normal">backtracks</em> and tries a different neighbor. This continues until either a complete Hamiltonian path is found, or all possibilities are exhausted.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== LEARN PAGE ========== -->
+<div class="page" id="page-learn">
+  <div class="learn-layout">
+    <div class="learn-hero">
+      <h1>Understanding Hamiltonian Paths</h1>
+      <p>A visual, interactive guide to one of graph theory's most fascinating problems — from basics to real-world applications.</p>
+    </div>
+
+    <div class="concept-grid">
+      <div class="learn-card">
+        <h2 style="color:var(--neon-blue)">⬡ HAMILTONIAN PATH</h2>
+        <p>A <strong style="color:var(--neon-cyan)">Hamiltonian Path</strong> is a path in a graph that visits every vertex <em style="color:var(--neon-amber);font-style:normal">exactly once</em>. It doesn't need to return to the starting point.</p>
+        <p>Named after Sir William Rowan Hamilton who invented a puzzle involving finding such paths on an icosahedron in 1857.</p>
+        <div class="mini-graph-wrap"><canvas id="learn-canvas-1"></canvas></div>
+        <div style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);text-align:center;font-family:var(--font-mono)">A → B → C → D → E (visits all nodes once)</div>
+      </div>
+      <div class="learn-card">
+        <h2 style="color:var(--neon-purple)">◎ HAMILTONIAN CIRCUIT</h2>
+        <p>A <strong style="color:var(--neon-purple)">Hamiltonian Circuit</strong> (or cycle) is a Hamiltonian path that also returns to the starting vertex, forming a closed loop.</p>
+        <p>Every complete graph K<sub>n</sub> where n ≥ 3 has a Hamiltonian circuit. Finding one is the basis of the famous Travelling Salesman Problem.</p>
+        <div class="mini-graph-wrap"><canvas id="learn-canvas-2"></canvas></div>
+        <div style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);text-align:center;font-family:var(--font-mono)">A → B → C → D → E → A (returns to start)</div>
+      </div>
+    </div>
+
+    <div class="theorem-box">
+      <h3>ORE'S THEOREM (1960)</h3>
+      <p>If for every pair of non-adjacent vertices <em>u</em> and <em>v</em> in a graph <em>G</em> with <em>n</em> vertices, the condition <em>deg(u) + deg(v) ≥ n</em> holds, then <em>G</em> has a Hamiltonian circuit. This is a <em>sufficient</em> (not necessary) condition.</p>
+    </div>
+
+    <div class="info-strip">
+      <div class="info-tile">
+        <h3>REAL-WORLD USES</h3>
+        <p>Logistics routing, DNA sequencing (genome assembly), circuit board drilling, knight's tour on chess, scheduling problems.</p>
+      </div>
+      <div class="info-tile">
+        <h3>WHY NO SOLUTION?</h3>
+        <p>A graph with a "bridge" vertex of degree 1 cannot have a circuit. Disconnected graphs have no path. Odd-degree nodes in Eulerian terms differ from Hamiltonian constraints.</p>
+      </div>
+      <div class="info-tile">
+        <h3>vs EULER PATH</h3>
+        <p>Euler paths visit every <em style="color:var(--neon-cyan);font-style:normal">edge</em> once. Hamiltonian paths visit every <em style="color:var(--neon-purple);font-style:normal">vertex</em> once. Very different problems with very different algorithms!</p>
+      </div>
+      <div class="info-tile">
+        <h3>COMPLEXITY</h3>
+        <p>No polynomial-time algorithm is known. It's NP-complete. For n nodes, brute force checks n! paths. Even heuristics like dynamic programming run in O(2ⁿ·n²).</p>
+      </div>
+    </div>
+    <div style="text-align:center;padding:2rem">
+      <button class="btn-primary" onclick="showPage('builder')">Try the Graph Builder →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// CORE UTILS
+// =====================================================
+let currentPage = 'home';
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelector(`[data-page="${name}"]`).classList.add('active');
+  currentPage = name;
+  if(name==='home') initHeroCanvas();
+  if(name==='builder') initBuilder();
+  if(name==='game') initGame();
+  if(name==='sim') initSim();
+  if(name==='ai') initAi();
+  if(name==='learn') initLearn();
+}
+
+function showToast(msg,type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast toast-${type} show`;
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// =====================================================
+// HOME CANVAS — animated floating graph
+// =====================================================
+let heroNodes = [], heroEdges = [];
+let heroAnimId;
+function initHeroCanvas() {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  function resize() {
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  heroNodes = Array.from({length:22}, ()=>({
+    x: Math.random()*canvas.offsetWidth,
+    y: Math.random()*canvas.offsetHeight,
+    vx:(Math.random()-0.5)*0.4,
+    vy:(Math.random()-0.5)*0.4,
+    r: Math.random()*4+3,
+    glow: Math.random()*Math.PI*2,
+    color: ['#4f8eff','#00e5ff','#a259ff'][Math.floor(Math.random()*3)]
+  }));
+
+  function frame() {
+    const W=canvas.offsetWidth, H=canvas.offsetHeight;
+    ctx.clearRect(0,0,W,H);
+    heroNodes.forEach(n=>{
+      n.x+=n.vx; n.y+=n.vy;
+      if(n.x<0||n.x>W) n.vx*=-1;
+      if(n.y<0||n.y>H) n.vy*=-1;
+      n.glow+=0.02;
+    });
+    heroNodes.forEach((a,i)=>{
+      heroNodes.forEach((b,j)=>{
+        if(i>=j) return;
+        const d=Math.hypot(a.x-b.x,a.y-b.y);
+        if(d<160){
+          const alpha=(1-d/160)*0.5;
+          ctx.beginPath();
+          ctx.strokeStyle=`rgba(79,142,255,${alpha})`;
+          ctx.lineWidth=0.8;
+          ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+        }
+      });
+    });
+    heroNodes.forEach(n=>{
+      const g=Math.sin(n.glow)*0.4+0.6;
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle=n.color;
+      ctx.globalAlpha=g;ctx.fill();ctx.globalAlpha=1;
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r*2.5,0,Math.PI*2);
+      ctx.fillStyle=n.color.replace(')',',0.12)').replace('rgb','rgba');
+      ctx.fill();
+    });
+    heroAnimId=requestAnimationFrame(frame);
+  }
+  if(heroAnimId) cancelAnimationFrame(heroAnimId);
+  frame();
+}
+
+// =====================================================
+// GRAPH BUILDER
+// =====================================================
+let gbNodes=[], gbEdges=[], gbMode='node', gbAnimId;
+let gbDragging=null, gbEdgeStart=null;
+let gbPath=[], gbPathAnimStep=0, gbAnimating=false, gbIsSolving=false;
+
+function initBuilder() {
+  const canvas = document.getElementById('graph-canvas');
+  const ctx = canvas.getContext('2d');
+  function resize() {
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.removeEventListener('resize', resize);
+  window.addEventListener('resize', resize);
+
+  canvas.onclick = e => handleBuilderClick(e, canvas, ctx);
+  canvas.onmousedown = e => handleBuilderDown(e, canvas);
+  canvas.onmousemove = e => handleBuilderMove(e, canvas, ctx);
+  canvas.onmouseup = e => handleBuilderUp(e, canvas, ctx);
+
+  if(gbAnimId) cancelAnimationFrame(gbAnimId);
+  if(gbNodes.length===0) generateRandom();
+  renderBuilder(ctx, canvas);
+}
+
+function getCanvasPos(e, canvas) {
+  const r = canvas.getBoundingClientRect();
+  return {x:e.clientX-r.left, y:e.clientY-r.top};
+}
+
+function hitNode(pos) {
+  return gbNodes.find(n=>Math.hypot(n.x-pos.x,n.y-pos.y)<22);
+}
+
+let mousePos = {x:0,y:0};
+function handleBuilderClick(e, canvas, ctx) {
+  if(gbAnimating||gbIsSolving) return;
+  const pos = getCanvasPos(e, canvas);
+  if(gbMode==='node') {
+    if(hitNode(pos)) return;
+    gbNodes.push({x:pos.x, y:pos.y, id:gbNodes.length, glow:0, visited:false, current:false});
+    updateProgressDots();
+  }
+}
+function handleBuilderDown(e, canvas) {
+  const pos = getCanvasPos(e, canvas);
+  if(gbMode==='node') {
+    gbDragging = hitNode(pos);
+  } else {
+    gbEdgeStart = hitNode(pos);
+  }
+}
+function handleBuilderMove(e, canvas, ctx) {
+  mousePos = getCanvasPos(e, canvas);
+  if(gbDragging) {
+    gbDragging.x = mousePos.x;
+    gbDragging.y = mousePos.y;
+  }
+}
+function handleBuilderUp(e, canvas, ctx) {
+  const pos = getCanvasPos(e, canvas);
+  if(gbMode==='edge' && gbEdgeStart) {
+    const end = hitNode(pos);
+    if(end && end!==gbEdgeStart) {
+      const exists = gbEdges.some(e=>(e.a===gbEdgeStart&&e.b===end)||(e.a===end&&e.b===gbEdgeStart));
+      if(!exists) gbEdges.push({a:gbEdgeStart, b:end, highlighted:false, faded:false});
+    }
+  }
+  gbDragging = null;
+  gbEdgeStart = null;
+}
+
+function setMode(m) {
+  gbMode = m;
+  document.getElementById('mode-label').textContent = m==='node'?'Add Node':'Add Edge';
+  document.getElementById('btn-mode-node').classList.toggle('ctrl-btn-active',m==='node');
+  document.getElementById('btn-mode-edge').classList.toggle('ctrl-btn-active',m==='edge');
+  document.getElementById('graph-canvas').style.cursor = m==='node'?'crosshair':'pointer';
+}
+
+function generateRandom() {
+  gbNodes=[];gbEdges=[];gbPath=[];gbAnimating=false;gbIsSolving=false;
+  const canvas = document.getElementById('graph-canvas');
+  if(!canvas.offsetWidth) {setTimeout(generateRandom,200);return;}
+  const W=canvas.offsetWidth, H=canvas.offsetHeight;
+  const n = 7;
+  for(let i=0;i<n;i++) {
+    const angle = (i/n)*Math.PI*2;
+    const rx=(W/2-80), ry=(H/2-80);
+    gbNodes.push({
+      x: W/2+rx*Math.cos(angle)*0.8+(Math.random()-0.5)*60,
+      y: H/2+ry*Math.sin(angle)*0.8+(Math.random()-0.5)*60,
+      id:i, glow:0, visited:false, current:false
+    });
+  }
+  const density = 0.55;
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) {
+    if(Math.random()<density) gbEdges.push({a:gbNodes[i],b:gbNodes[j],highlighted:false,faded:false});
+  }
+  updateProgressDots();
+  addLog('Generated random graph with '+n+' nodes.','info');
+  setStatus('idle');
+}
+
+function resetGraph() {
+  gbNodes=[];gbEdges=[];gbPath=[];gbAnimating=false;gbIsSolving=false;
+  updateProgressDots();
+  document.getElementById('step-log').innerHTML='<span class="step-info">Graph reset. Add nodes by clicking.</span>';
+  setStatus('idle');
+}
+
+function setStatus(s) {
+  const el=document.getElementById('algo-status');
+  el.className='status-badge';
+  const map={idle:'READY',found:'PATH FOUND',none:'NO PATH EXISTS',running:'SOLVING...'};
+  const cls={idle:'status-idle',found:'status-found',none:'status-none',running:'status-running'};
+  el.classList.add(cls[s]);
+  el.textContent=map[s];
+}
+
+function addLog(msg, type='info') {
+  const el=document.getElementById('step-log');
+  const div=document.createElement('div');
+  div.className=`step-line step-${type}`;
+  div.textContent = msg;
+  el.appendChild(div);
+  el.scrollTop=el.scrollHeight;
+}
+
+function updateProgressDots() {
+  const el=document.getElementById('progress-dots');
+  el.innerHTML='';
+  gbNodes.forEach((n,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(gbPath.includes(n)?' done':'');
+    el.appendChild(d);
+  });
+}
+
+// Hamiltonian path algorithm (backtracking)
+function findPath(circuit=false) {
+  if(gbNodes.length<2){showToast('Add at least 2 nodes first','error');return;}
+  gbIsSolving=true;gbAnimating=false;
+  gbNodes.forEach(n=>{n.visited=false;n.current=false;n.glow=0});
+  gbEdges.forEach(e=>{e.highlighted=false;e.faded=false});
+  gbPath=[];
+  setStatus('running');
+  document.getElementById('step-log').innerHTML='';
+  addLog('Starting backtracking algorithm...','info');
+  addLog(`Looking for: ${circuit?'Hamiltonian Circuit':'Hamiltonian Path'}`,'info');
+
+  setTimeout(()=>{
+    const adj = buildAdj();
+    const steps=[];
+    const found = solve(0,[gbNodes[0]],adj,circuit,steps,gbNodes.length);
+    gbIsSolving=false;
+    if(found) {
+      setStatus('found');
+      showToast(circuit?'Circuit found! ✓':'Path found! ✓','success');
+      animatePath(steps);
+    } else {
+      setStatus('none');
+      showToast('No Hamiltonian '+(circuit?'circuit':'path')+' exists','error');
+      addLog('No solution exists for this graph.','err');
+      gbNodes.forEach(n=>{n.visited=false;n.current=false});
+      gbEdges.forEach(e=>{e.faded=true;e.highlighted=false});
+    }
+  },100);
+}
+
+function buildAdj() {
+  const adj = {};
+  gbNodes.forEach(n=>adj[n.id]=[]);
+  gbEdges.forEach(e=>{
+    adj[e.a.id].push(e.b.id);
+    adj[e.b.id].push(e.a.id);
+  });
+  return adj;
+}
+
+function solve(start, path, adj, circuit, steps, total) {
+  if(path.length===total) {
+    if(!circuit) {steps.push({type:'found',path:[...path]});return true;}
+    const hasReturn = adj[path[path.length-1].id].includes(path[0].id);
+    if(hasReturn) {steps.push({type:'found',path:[...path]});return true;}
+    return false;
+  }
+  const curr=path[path.length-1];
+  for(const nid of adj[curr.id]) {
+    const nb=gbNodes.find(n=>n.id===nid);
+    if(path.includes(nb)) {steps.push({type:'skip',from:curr.id,to:nid});continue;}
+    steps.push({type:'try',from:curr.id,to:nid,pathLen:path.length+1});
+    path.push(nb);
+    if(solve(nid,path,adj,circuit,steps,total)) return true;
+    steps.push({type:'back',from:curr.id,to:nid});
+    path.pop();
+  }
+  return false;
+}
+
+function animatePath(steps) {
+  gbAnimating=true;
+  let i=0;
+  gbNodes.forEach(n=>{n.visited=false;n.current=false;n.glow=0});
+  function next() {
+    if(i>=steps.length){gbAnimating=false;return;}
+    const s=steps[i++];
+    if(s.type==='try'){
+      addLog(`Trying: ${s.from} → ${s.to} (depth ${s.pathLen})`, 'try');
+      const n=gbNodes.find(x=>x.id===s.to);
+      if(n){n.current=true;setTimeout(()=>{n.current=false;n.visited=true;n.glow=1;},200)}
+    } else if(s.type==='back') {
+      addLog(`Backtrack from ${s.to}`, 'err');
+      const n=gbNodes.find(x=>x.id===s.to);
+      if(n){n.visited=false;n.glow=0;}
+    } else if(s.type==='found') {
+      gbPath=s.path;
+      gbPath.forEach(n=>{n.visited=true;n.glow=1;});
+      addLog(`✓ Solution found! Path: ${s.path.map(n=>n.id).join(' → ')}`, 'ok');
+      for(let j=0;j<gbPath.length-1;j++){
+        const e=gbEdges.find(e=>(e.a===gbPath[j]&&e.b===gbPath[j+1])||(e.a===gbPath[j+1]&&e.b===gbPath[j]));
+        if(e) e.highlighted=true;
+      }
+      updateProgressDots();
+      gbAnimating=false;return;
+    }
+    const delay = s.type==='try'?80:40;
+    setTimeout(next, delay);
+  }
+  next();
+}
+
+function renderBuilder(ctx, canvas) {
+  function frame() {
+    const W=canvas.offsetWidth, H=canvas.offsetHeight;
+    ctx.clearRect(0,0,W,H);
+
+    // Dot grid
+    ctx.fillStyle='rgba(99,120,255,0.06)';
+    for(let x=20;x<W;x+=30)for(let y=20;y<H;y+=30)
+      {ctx.beginPath();ctx.arc(x,y,1.2,0,Math.PI*2);ctx.fill();}
+
+    // Edges
+    gbEdges.forEach(e=>{
+      const alpha = e.faded?0.06:1;
+      ctx.beginPath();
+      ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
+      if(e.highlighted){
+        ctx.strokeStyle=`rgba(0,255,136,${alpha})`;ctx.lineWidth=3;
+        ctx.shadowColor='#00ff88';ctx.shadowBlur=12;
+      } else {
+        ctx.strokeStyle=`rgba(99,120,255,${alpha*0.5})`;ctx.lineWidth=1.5;
+        ctx.shadowBlur=0;
+      }
+      ctx.stroke();ctx.shadowBlur=0;
+    });
+
+    // Edge-mode preview
+    if(gbEdgeStart && gbMode==='edge') {
+      ctx.beginPath();ctx.moveTo(gbEdgeStart.x,gbEdgeStart.y);ctx.lineTo(mousePos.x,mousePos.y);
+      ctx.strokeStyle='rgba(0,229,255,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
+    }
+
+    // Nodes
+    gbNodes.forEach(n=>{
+      n.glow = Math.min(1, n.glow+0.05);
+      const isPath=gbPath.includes(n);
+      let color=n.visited?'#00ff88':(n.current?'#ffaa00':'#4f8eff');
+      if(isPath&&!n.visited) color='#00ff88';
+
+      // Glow
+      if(n.visited||n.current){
+        ctx.beginPath();ctx.arc(n.x,n.y,26,0,Math.PI*2);
+        ctx.fillStyle=(n.current?'rgba(255,170,0,0.12)':'rgba(0,255,136,0.1)');ctx.fill();
+      }
+      // Node
+      ctx.beginPath();ctx.arc(n.x,n.y,18,0,Math.PI*2);
+      ctx.fillStyle='#0d1225';ctx.fill();
+      ctx.strokeStyle=color;ctx.lineWidth=2;
+      if(n.visited||n.current){ctx.shadowColor=color;ctx.shadowBlur=16;}
+      ctx.stroke();ctx.shadowBlur=0;
+      // Label
+      ctx.fillStyle=color;ctx.font='bold 12px JetBrains Mono,monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(n.id,n.x,n.y);
+    });
+
+    gbAnimId=requestAnimationFrame(frame);
+  }
+  if(gbAnimId) cancelAnimationFrame(gbAnimId);
+  frame();
+}
+
+// =====================================================
+// GAME MODE
+// =====================================================
+let gameNodes=[], gameEdges=[], gameUserPath=[], gameSolution=[];
+let gameScore=0, gameTimer=60, gameTimerInterval=null, gameDifficulty='easy', gameStarted=false;
+let gameAnimId;
+
+function initGame() {
+  const canvas = document.getElementById('game-canvas');
+  const ctx = canvas.getContext('2d');
+  function resize() {
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  canvas.onclick = e => handleGameClick(e, canvas);
+  if(gameAnimId) cancelAnimationFrame(gameAnimId);
+  if(gameNodes.length===0) startGame();
+  renderGame(ctx, canvas);
+}
+
+const DIFF_CONFIG = {easy:{nodes:5,time:90},medium:{nodes:7,time:60},hard:{nodes:9,time:45}};
+
+function startGame() {
+  if(gameTimerInterval) clearInterval(gameTimerInterval);
+  const cfg=DIFF_CONFIG[gameDifficulty];
+  gameNodes=[];gameEdges=[];gameUserPath=[];gameSolution=[];gameStarted=false;
+
+  const canvas=document.getElementById('game-canvas');
+  if(!canvas.offsetWidth){setTimeout(startGame,200);return;}
+  const W=canvas.offsetWidth,H=canvas.offsetHeight;
+  const n=cfg.nodes;
+  for(let i=0;i<n;i++){
+    const angle=(i/n)*Math.PI*2;
+    gameNodes.push({
+      x:W/2+(W/2-70)*Math.cos(angle)*0.75+(Math.random()-0.5)*40,
+      y:H/2+(H/2-70)*Math.sin(angle)*0.75+(Math.random()-0.5)*40,
+      id:i,selected:false,error:false,errorAnim:0
+    });
+  }
+  // Generate a graph that definitely has a Hamiltonian path
+  const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
+  for(let i=0;i<n-1;i++) {
+    gameEdges.push({a:gameNodes[perm[i]],b:gameNodes[perm[i+1]]});
+  }
+  // Add random extra edges
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) {
+    if(Math.random()<0.3&&!gameEdges.some(e=>(e.a===gameNodes[i]&&e.b===gameNodes[j])||(e.a===gameNodes[j]&&e.b===gameNodes[i])))
+      gameEdges.push({a:gameNodes[i],b:gameNodes[j]});
+  }
+  gameSolution=perm.map(i=>gameNodes[i]);
+
+  gameTimer=cfg.time;
+  document.getElementById('game-timer').textContent=gameTimer+'s';
+  document.getElementById('game-path-display').textContent='—';
+  document.getElementById('game-score').textContent=gameScore;
+  gameStarted=true;
+
+  gameTimerInterval=setInterval(()=>{
+    gameTimer--;
+    document.getElementById('game-timer').textContent=gameTimer+'s';
+    if(gameTimer<=0){
+      clearInterval(gameTimerInterval);
+      showGameMsg('TIME UP! ⏱','error');
+      gameStarted=false;
+    }
+  },1000);
+}
+
+function setDifficulty(d) {
+  gameDifficulty=d;
+  document.querySelectorAll('.diff-pill').forEach(p=>p.className='diff-pill');
+  const pill=[...document.querySelectorAll('.diff-pill')].find(p=>p.textContent.toLowerCase()===d);
+  if(pill) pill.classList.add(`active-${d==='medium'?'med':d}`);
+  startGame();
+}
+
+function handleGameClick(e, canvas) {
+  if(!gameStarted) return;
+  const r=canvas.getBoundingClientRect();
+  const pos={x:e.clientX-r.left,y:e.clientY-r.top};
+  const node=gameNodes.find(n=>Math.hypot(n.x-pos.x,n.y-pos.y)<24);
+  if(!node) return;
+
+  if(gameUserPath.includes(node)) {
+    node.error=true;node.errorAnim=1;
+    setTimeout(()=>{node.error=false;},800);
+    showGameMsg('Already visited! ✗','error');
+    return;
+  }
+  if(gameUserPath.length>0) {
+    const prev=gameUserPath[gameUserPath.length-1];
+    const connected=gameEdges.some(e=>(e.a===prev&&e.b===node)||(e.a===node&&e.b===prev));
+    if(!connected) {
+      node.error=true;node.errorAnim=1;
+      setTimeout(()=>{node.error=false;},800);
+      showGameMsg('Not connected! ✗','error');
+      return;
+    }
+  }
+  gameUserPath.push(node);
+  node.selected=true;
+  document.getElementById('game-path-display').textContent=gameUserPath.map(n=>n.id).join(' → ');
+
+  if(gameUserPath.length===gameNodes.length) {
+    clearInterval(gameTimerInterval);
+    const bonus=gameTimer*10;
+    const pts = 500+bonus;
+    gameScore+=pts;
+    document.getElementById('game-score').textContent=gameScore;
+    document.getElementById('player-score').textContent=gameScore;
+    document.getElementById('player-row').style.display='flex';
+    showGameMsg('HAMILTONIAN PATH! 🎉','win');
+    gameStarted=false;
+    showToast(`+${pts} points! Brilliant!`,'success');
+  }
+}
+
+function resetGamePath() {
+  gameUserPath=[];
+  gameNodes.forEach(n=>{n.selected=false;n.error=false;});
+  document.getElementById('game-path-display').textContent='—';
+}
+
+function showGameMsg(msg,type) {
+  const el=document.getElementById('game-msg');
+  el.textContent=msg;el.className=`game-msg ${type}`;
+  el.style.display='block';
+  el.style.animation='none';
+  requestAnimationFrame(()=>{el.style.animation='fade-msg 2s forwards';});
+  setTimeout(()=>{el.style.display='none';},2100);
+}
+
+function renderGame(ctx, canvas) {
+  function frame() {
+    const W=canvas.offsetWidth,H=canvas.offsetHeight;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(79,142,255,0.04)';
+    for(let x=20;x<W;x+=30) for(let y=20;y<H;y+=30)
+      {ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+
+    gameEdges.forEach(e=>{
+      const inPath=gameUserPath.length>0&&(()=>{
+        for(let i=0;i<gameUserPath.length-1;i++) {
+          const a=gameUserPath[i],b=gameUserPath[i+1];
+          if((e.a===a&&e.b===b)||(e.a===b&&e.b===a)) return true;
+        }
+        return false;
+      })();
+      ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
+      if(inPath){ctx.strokeStyle='#00e5ff';ctx.lineWidth=2.5;ctx.shadowColor='#00e5ff';ctx.shadowBlur=10;}
+      else{ctx.strokeStyle='rgba(99,120,255,0.35)';ctx.lineWidth=1.5;ctx.shadowBlur=0;}
+      ctx.stroke();ctx.shadowBlur=0;
+    });
+
+    gameNodes.forEach(n=>{
+      if(n.errorAnim>0) n.errorAnim=Math.max(0,n.errorAnim-0.05);
+      const idx=gameUserPath.indexOf(n);
+      let color='#4f8eff';
+      if(n.selected) color='#00ff88';
+      if(n.error) color=`rgba(255,${Math.floor(51+n.errorAnim*100)},102,1)`;
+
+      if(n.selected) {ctx.beginPath();ctx.arc(n.x,n.y,28,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,0.1)';ctx.fill();}
+      if(n.error) {
+        ctx.save();
+        const shake=n.errorAnim*4;
+        ctx.translate(Math.sin(Date.now()*0.05)*shake,0);
+      }
+      ctx.beginPath();ctx.arc(n.x,n.y,20,0,Math.PI*2);
+      ctx.fillStyle='#0d1225';ctx.fill();
+      ctx.strokeStyle=color;ctx.lineWidth=2;
+      if(n.selected||n.error){ctx.shadowColor=color;ctx.shadowBlur=14;}
+      ctx.stroke();ctx.shadowBlur=0;
+      if(n.error) ctx.restore();
+
+      if(idx>=0) {
+        ctx.fillStyle=color;ctx.font='bold 11px JetBrains Mono,monospace';
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(idx+1,n.x,n.y);
+      } else {
+        ctx.fillStyle=color;ctx.font='bold 12px JetBrains Mono,monospace';
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(n.id,n.x,n.y);
+      }
+    });
+
+    gameAnimId=requestAnimationFrame(frame);
+  }
+  if(gameAnimId) cancelAnimationFrame(gameAnimId);
+  frame();
+}
+
+// =====================================================
+// SIMULATION
+// =====================================================
+let simNodes=[], simEdges=[], simPath=[], simTruck={x:0,y:0,target:0,progress:0};
+let simRunning=false, simAnimId, simStep=0, simSpeed=1;
+let simDistTotal=0, simHousesVisited=0, simElapsed=0, simStartTime=0;
+
+const HOUSE_ICONS = ['🏠','🏡','🏢','🏪','🏨','🏦','🏗','🏭','🏩','🏬'];
+
+function initSim() {
+  const canvas = document.getElementById('sim-canvas');
+  const ctx = canvas.getContext('2d');
+  function resize() {
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = canvas.offsetHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  if(simNodes.length===0) buildSimGraph(canvas);
+  if(simAnimId) cancelAnimationFrame(simAnimId);
+  renderSim(ctx, canvas);
+}
+
+function buildSimGraph(canvas) {
+  if(!canvas.offsetWidth){setTimeout(()=>buildSimGraph(canvas),200);return;}
+  const W=canvas.offsetWidth, H=canvas.offsetHeight;
+  simNodes=[];simEdges=[];simPath=[];simStep=0;
+  simTruck={x:0,y:0,target:0,progress:0};
+  simDistTotal=0;simHousesVisited=0;simElapsed=0;
+
+  const n=10;
+  for(let i=0;i<n;i++){
+    simNodes.push({
+      x:80+Math.random()*(W-160),
+      y:60+Math.random()*(H-120),
+      id:i,icon:HOUSE_ICONS[i],visited:false,
+      label:'House '+(i+1)
+    });
+  }
+  // Build a guaranteed Hamiltonian path
+  const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
+  for(let i=0;i<n-1;i++) simEdges.push({a:simNodes[perm[i]],b:simNodes[perm[i+1]]});
+  // Extra roads
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) {
+    if(Math.random()<0.25&&!simEdges.some(e=>(e.a===simNodes[i]&&e.b===simNodes[j])||(e.a===simNodes[j]&&e.b===simNodes[i])))
+      simEdges.push({a:simNodes[i],b:simNodes[j]});
+  }
+  simPath=perm.map(i=>simNodes[i]);
+  simTruck.x=simPath[0].x; simTruck.y=simPath[0].y;
+  updateSimMetrics();
+}
+
+function updateSimMetrics() {
+  document.getElementById('met-dist').textContent=simDistTotal.toFixed(1)+' km';
+  document.getElementById('met-eff').textContent=simRunning||simHousesVisited>0?Math.round((simHousesVisited/simNodes.length)*100)+'%':'—';
+  document.getElementById('met-houses').textContent=simHousesVisited+'/'+simNodes.length;
+  document.getElementById('met-time').textContent=simElapsed.toFixed(1)+'s';
+}
+
+function startSimulation() {
+  if(simPath.length===0) return;
+  simRunning=true;simStep=0;
+  simDistTotal=0;simHousesVisited=0;simElapsed=0;simStartTime=Date.now();
+  simNodes.forEach(n=>n.visited=false);
+  simPath[0].visited=true;simHousesVisited=1;
+  simTruck.x=simPath[0].x;simTruck.y=simPath[0].y;
+  simTruck.target=1;simTruck.progress=0;
+  updateSimMetrics();
+}
+
+function resetSim() {
+  simRunning=false;
+  const canvas=document.getElementById('sim-canvas');
+  buildSimGraph(canvas);
+}
+
+function setSpeeed(s) {simSpeed=s;}
+
+function compareRoutes() {
+  showToast('Showing optimal vs random comparison','info');
+}
+
+function renderSim(ctx, canvas) {
+  function frame() {
+    const W=canvas.offsetWidth, H=canvas.offsetHeight;
+    ctx.clearRect(0,0,W,H);
+
+    // Grid background
+    ctx.strokeStyle='rgba(79,142,255,0.05)';ctx.lineWidth=1;
+    for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+    // Roads
+    simEdges.forEach(e=>{
+      const inPath=(()=>{
+        for(let i=0;i<simStep&&i<simPath.length-1;i++) {
+          if((simPath[i]===e.a&&simPath[i+1]===e.b)||(simPath[i]===e.b&&simPath[i+1]===e.a)) return true;
+        }
+        return false;
+      })();
+      ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
+      ctx.strokeStyle=inPath?'rgba(0,229,255,0.6)':'rgba(99,120,255,0.2)';
+      ctx.lineWidth=inPath?2.5:1.5;
+      if(inPath){ctx.shadowColor='#00e5ff';ctx.shadowBlur=8;}
+      ctx.stroke();ctx.shadowBlur=0;
+    });
+
+    // Houses
+    simNodes.forEach(n=>{
+      const glow = n.visited?1:0;
+      if(n.visited){
+        ctx.beginPath();ctx.arc(n.x,n.y,28,0,Math.PI*2);
+        ctx.fillStyle='rgba(0,255,136,0.12)';ctx.fill();
+      }
+      ctx.beginPath();ctx.arc(n.x,n.y,20,0,Math.PI*2);
+      ctx.fillStyle='#0d1225';ctx.fill();
+      ctx.strokeStyle=n.visited?'#00ff88':'rgba(99,120,255,0.5)';
+      ctx.lineWidth=2;
+      if(n.visited){ctx.shadowColor='#00ff88';ctx.shadowBlur=12;}
+      ctx.stroke();ctx.shadowBlur=0;
+
+      ctx.font='14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(n.icon,n.x,n.y);
+      ctx.fillStyle=n.visited?'#00ff88':'#8899cc';
+      ctx.font='9px Inter,sans-serif';ctx.fillText(n.label,n.x,n.y+30);
+    });
+
+    // Truck animation
+    if(simRunning && simStep<simPath.length-1) {
+      simTruck.progress+=0.015*simSpeed;
+      if(simTruck.progress>=1) {
+        simTruck.progress=0;
+        simStep++;
+        if(simStep<simPath.length){
+          const from=simPath[simStep-1], to=simPath[simStep];
+          simDistTotal+=Math.hypot(to.x-from.x,to.y-from.y)*0.05;
+          simPath[simStep].visited=true;simHousesVisited++;
+        }
+        if(simStep>=simPath.length-1){simRunning=false;showToast('Delivery complete! All houses visited ✓','success');}
+      }
+      simElapsed=(Date.now()-simStartTime)/1000;
+      updateSimMetrics();
+    }
+    if(simStep<simPath.length-1){
+      const from=simPath[simStep], to=simPath[simStep+1];
+      simTruck.x=from.x+(to.x-from.x)*simTruck.progress;
+      simTruck.y=from.y+(to.y-from.y)*simTruck.progress;
+    }
+    // Draw truck
+    const tx=simTruck.x, ty=simTruck.y;
+    ctx.beginPath();ctx.arc(tx,ty,14,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,170,0,0.15)';ctx.fill();
+    ctx.beginPath();ctx.arc(tx,ty,10,0,Math.PI*2);
+    ctx.fillStyle='#0d1225';ctx.fill();
+    ctx.strokeStyle='#ffaa00';ctx.lineWidth=2;
+    ctx.shadowColor='#ffaa00';ctx.shadowBlur=12;ctx.stroke();ctx.shadowBlur=0;
+    ctx.font='10px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('🚚',tx,ty);
+
+    simAnimId=requestAnimationFrame(frame);
+  }
+  if(simAnimId) cancelAnimationFrame(simAnimId);
+  frame();
+}
+
+// =====================================================
+// AI SOLVER
+// =====================================================
+let aiNodes=[], aiEdges=[], aiPath=[], aiDeadEnds=[];
+let aiAnimId, aiSolving=false, aiStepDelay=120;
+
+function initAi() {
+  const canvas=document.getElementById('ai-canvas');
+  const ctx=canvas.getContext('2d');
+  function resize(){
+    canvas.width=canvas.offsetWidth*devicePixelRatio;
+    canvas.height=canvas.offsetHeight*devicePixelRatio;
+    ctx.scale(devicePixelRatio,devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize',resize);
+  if(aiNodes.length===0) genAiGraph();
+  if(aiAnimId) cancelAnimationFrame(aiAnimId);
+  renderAi(ctx,canvas);
+}
+
+function genAiGraph() {
+  aiSolving=false;aiPath=[];aiDeadEnds=[];
+  aiNodes=[];aiEdges=[];
+  document.getElementById('ai-log').innerHTML='<span style="color:var(--text-muted);font-size:0.75rem">Click "Run Backtracking" to watch the AI solve step by step.</span>';
+  document.getElementById('think-anim').style.display='none';
+
+  const canvas=document.getElementById('ai-canvas');
+  if(!canvas.offsetWidth){setTimeout(genAiGraph,200);return;}
+  const W=canvas.offsetWidth,H=canvas.offsetHeight;
+  const n=6;
+  for(let i=0;i<n;i++){
+    const angle=(i/n)*Math.PI*2;
+    aiNodes.push({
+      x:W/2+(W/2-90)*Math.cos(angle)*0.7,
+      y:H/2+(H/2-90)*Math.sin(angle)*0.7,
+      id:i,state:'idle',depth:-1
+    });
+  }
+  const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
+  for(let i=0;i<n-1;i++) aiEdges.push({a:aiNodes[perm[i]],b:aiNodes[perm[i+1]],state:'idle'});
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) {
+    if(Math.random()<0.3&&!aiEdges.some(e=>(e.a===aiNodes[i]&&e.b===aiNodes[j])||(e.a===aiNodes[j]&&e.b===aiNodes[i])))
+      aiEdges.push({a:aiNodes[i],b:aiNodes[j],state:'idle'});
+  }
+}
+
+function resetAi() {aiSolving=false;genAiGraph();}
+
+function addAiLog(msg,type) {
+  const el=document.getElementById('ai-log');
+  const div=document.createElement('div');
+  div.className='log-entry';
+  const icon={try:'?',ok:'✓',back:'✗',info:'·'}[type]||'·';
+  div.innerHTML=`<span class="log-icon log-${type}">${icon}</span><span class="log-${type}">${msg}</span>`;
+  el.appendChild(div);
+  el.scrollTop=el.scrollHeight;
+}
+
+function startAiSolver() {
+  if(aiSolving) return;
+  aiSolving=true;aiPath=[];aiDeadEnds=[];
+  aiNodes.forEach(n=>{n.state='idle';n.depth=-1;});
+  aiEdges.forEach(e=>e.state='idle');
+  document.getElementById('ai-log').innerHTML='';
+  document.getElementById('think-anim').style.display='flex';
+
+  const adj={};
+  aiNodes.forEach(n=>adj[n.id]=[]);
+  aiEdges.forEach(e=>{adj[e.a.id].push(e.b.id);adj[e.b.id].push(e.a.id);});
+
+  const steps=[];
+  const path=[aiNodes[0]];
+  aiNodes[0].state='visited';
+  solveAi(path,adj,steps,aiNodes.length);
+
+  let i=0;
+  function playStep() {
+    if(!aiSolving||i>=steps.length){
+      document.getElementById('think-anim').style.display='none';
+      aiSolving=false;return;
+    }
+    const s=steps[i++];
+    const fromN=aiNodes.find(n=>n.id===s.from);
+    const toN=aiNodes.find(n=>n.id===s.to);
+    const edge=aiEdges.find(e=>(e.a.id===s.from&&e.b.id===s.to)||(e.a.id===s.to&&e.b.id===s.from));
+
+    if(s.type==='try'){
+      if(toN){toN.state='current';toN.depth=s.depth;}
+      if(edge) edge.state='active';
+      addAiLog(`Try ${s.from} → ${s.to} (depth ${s.depth})`,'try');
+      document.getElementById('ai-explain').innerHTML='<strong>ATTEMPTING PATH</strong><br><br>Extending path to node '+s.to+'. Checking if this leads to a solution...';
+    } else if(s.type==='accept'){
+      if(toN){toN.state='visited';}
+      if(edge) edge.state='used';
+    } else if(s.type==='back'){
+      if(toN){toN.state='dead';aiDeadEnds.push(toN.id);}
+      if(edge) edge.state='dead';
+      addAiLog(`Backtrack ✗ from ${s.to}`,'back');
+      document.getElementById('ai-explain').innerHTML='<strong>BACKTRACKING</strong><br><br>Node '+s.to+' led to a dead end. No unvisited neighbors remain. Trying different path...';
+      setTimeout(()=>{if(toN)toN.state='idle';if(edge)edge.state='idle';},600);
+    } else if(s.type==='found'){
+      addAiLog('✓ Hamiltonian path found!','ok');
+      aiPath=s.path;
+      aiPath.forEach(n=>{n.state='solution';});
+      aiEdges.forEach(e=>{
+        for(let k=0;k<aiPath.length-1;k++){
+          if((e.a===aiPath[k]&&e.b===aiPath[k+1])||(e.a===aiPath[k+1]&&e.b===aiPath[k])) e.state='solution';
+        }
+      });
+      document.getElementById('ai-explain').innerHTML='<strong>SOLUTION FOUND!</strong><br><br>Path: '+s.path.map(n=>n.id).join(' → ')+'<br><br>All vertices visited exactly once. Hamiltonian path exists!';
+      document.getElementById('think-anim').style.display='none';
+      showToast('AI found the path! 🎯','success');
+      aiSolving=false;return;
+    }
+    setTimeout(playStep, aiStepDelay);
+  }
+  setTimeout(playStep, 200);
+}
+
+function solveAi(path, adj, steps, total) {
+  if(path.length===total){
+    steps.push({type:'found',path:[...path]});return true;
+  }
+  const curr=path[path.length-1];
+  for(const nid of adj[curr.id]){
+    const nb=aiNodes.find(n=>n.id===nid);
+    if(path.includes(nb)) continue;
+    steps.push({type:'try',from:curr.id,to:nid,depth:path.length});
+    path.push(nb);
+    steps.push({type:'accept',from:curr.id,to:nid});
+    if(solveAi(path,adj,steps,total)) return true;
+    steps.push({type:'back',from:curr.id,to:nid});
+    path.pop();
+  }
+  return false;
+}
+
+function renderAi(ctx, canvas) {
+  const colors={idle:'#4f8eff',current:'#ffaa00',visited:'#a259ff',dead:'#ff3366',solution:'#00ff88'};
+  const edgeColors={idle:'rgba(99,120,255,0.3)',active:'rgba(255,170,0,0.8)',used:'rgba(162,89,255,0.7)',dead:'rgba(255,51,102,0.2)',solution:'rgba(0,255,136,0.9)'};
+  function frame(){
+    const W=canvas.offsetWidth,H=canvas.offsetHeight;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(79,142,255,0.03)';
+    for(let x=20;x<W;x+=30) for(let y=20;y<H;y+=30){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+
+    aiEdges.forEach(e=>{
+      ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
+      const c=edgeColors[e.state]||edgeColors.idle;
+      ctx.strokeStyle=c;
+      ctx.lineWidth=e.state==='solution'?3:e.state==='active'?2.5:1.5;
+      if(e.state==='solution'){ctx.shadowColor='#00ff88';ctx.shadowBlur=10;}
+      else if(e.state==='active'){ctx.shadowColor='#ffaa00';ctx.shadowBlur=8;}
+      ctx.stroke();ctx.shadowBlur=0;
+      if(e.state==='dead'){
+        const mx=(e.a.x+e.b.x)/2,my=(e.a.y+e.b.y)/2;
+        ctx.fillStyle='rgba(255,51,102,0.6)';ctx.font='10px sans-serif';
+        ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('✗',mx,my);
+      }
+    });
+
+    aiNodes.forEach(n=>{
+      const c=colors[n.state]||colors.idle;
+      if(n.state!=='idle'){
+        ctx.beginPath();ctx.arc(n.x,n.y,30,0,Math.PI*2);
+        ctx.fillStyle=c.replace(')',',0.1)').replace('rgb','rgba')||'rgba(79,142,255,0.1)';
+        ctx.fillStyle=(n.state==='solution'?'rgba(0,255,136,0.12)':n.state==='current'?'rgba(255,170,0,0.12)':'rgba(162,89,255,0.1)');
+        ctx.fill();
+      }
+      ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
+      ctx.fillStyle='#0d1225';ctx.fill();
+      ctx.strokeStyle=c;ctx.lineWidth=2;
+      if(n.state!=='idle'){ctx.shadowColor=c;ctx.shadowBlur=16;}
+      ctx.stroke();ctx.shadowBlur=0;
+      ctx.fillStyle=c;ctx.font='bold 12px JetBrains Mono,monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(n.id,n.x,n.y);
+
+      // State label
+      if(n.state!=='idle'){
+        ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(n.x-20,n.y+26,40,14);
+        ctx.fillStyle=c;ctx.font='8px Inter,sans-serif';
+        ctx.fillText(n.state.toUpperCase(),n.x,n.y+33);
+      }
+    });
+
+    aiAnimId=requestAnimationFrame(frame);
+  }
+  if(aiAnimId) cancelAnimationFrame(aiAnimId);
+  frame();
+}
+
+// =====================================================
+// LEARN PAGE
+// =====================================================
+let learnAnim1, learnAnim2;
+
+function initLearn() {
+  initLearnCanvas(1, false);
+  initLearnCanvas(2, true);
+}
+
+function initLearnCanvas(n, circuit) {
+  const canvas=document.getElementById('learn-canvas-'+n);
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*devicePixelRatio||300;
+  canvas.height=canvas.offsetHeight*devicePixelRatio||130;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+
+  const W=canvas.offsetWidth||300, H=canvas.offsetHeight||130;
+  const nc=5, nodes=[];
+  for(let i=0;i<nc;i++){
+    const angle=(i/nc)*Math.PI*2-Math.PI/2;
+    nodes.push({x:W/2+(W/2-30)*Math.cos(angle)*0.7, y:H/2+(H/2-18)*Math.sin(angle)*0.7, id:i});
+  }
+  const path=[0,1,2,3,4];
+  let t=0;
+  const id=n===1?learnAnim1:learnAnim2;
+  if(id) cancelAnimationFrame(id);
+
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    t+=0.008;
+    const progress=((Math.sin(t)+1)/2);
+    const step=progress*(nc-1+(circuit?1:0));
+
+    // Draw all edges (for circuit: connect 4→0)
+    for(let i=0;i<nc;i++) for(let j=i+1;j<nc;j++){
+      ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);
+      ctx.strokeStyle='rgba(99,120,255,0.2)';ctx.lineWidth=1;ctx.stroke();
+    }
+    // Draw path edges
+    const total=circuit?nc:nc-1;
+    for(let i=0;i<Math.min(Math.floor(step),total);i++){
+      const a=nodes[path[i%nc]], b=nodes[path[(i+1)%nc]];
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+      ctx.strokeStyle=circuit?'rgba(162,89,255,0.9)':'rgba(79,142,255,0.9)';ctx.lineWidth=2;
+      ctx.shadowColor=circuit?'#a259ff':'#4f8eff';ctx.shadowBlur=8;ctx.stroke();ctx.shadowBlur=0;
+    }
+    // Nodes
+    nodes.forEach((nd,i)=>{
+      const active=i<=Math.floor(step)&&i<nc;
+      ctx.beginPath();ctx.arc(nd.x,nd.y,12,0,Math.PI*2);
+      ctx.fillStyle='#0d1225';ctx.fill();
+      ctx.strokeStyle=active?(circuit?'#a259ff':'#4f8eff'):'rgba(99,120,255,0.35)';ctx.lineWidth=1.5;
+      if(active){ctx.shadowColor=circuit?'#a259ff':'#4f8eff';ctx.shadowBlur=10;}
+      ctx.stroke();ctx.shadowBlur=0;
+      ctx.fillStyle=active?(circuit?'#a259ff':'#4f8eff'):'#445577';
+      ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String.fromCharCode(65+i),nd.x,nd.y);
+    });
+    if(n===1) learnAnim1=requestAnimationFrame(frame);
+    else learnAnim2=requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// =====================================================
+// INIT
+// =====================================================
+window.addEventListener('load', ()=>{
+  initHeroCanvas();
+  // Preload other pages lazily
+});
+</script>
+</body>
+</html>
