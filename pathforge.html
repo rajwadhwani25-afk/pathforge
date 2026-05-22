@@ -6,415 +6,454 @@
 <title>PathForge — Hamiltonian Explorer</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg0: #04060f;
-  --bg1: #080c1a;
-  --bg2: #0d1225;
-  --bg3: #111930;
-  --glass: rgba(13,18,37,0.7);
-  --border: rgba(99,120,255,0.18);
-  --border2: rgba(99,120,255,0.35);
-  --neon-blue: #4f8eff;
-  --neon-cyan: #00e5ff;
-  --neon-purple: #a259ff;
-  --neon-green: #00ff88;
-  --neon-red: #ff3366;
-  --neon-amber: #ffaa00;
-  --text-primary: #e8eeff;
-  --text-secondary: #8899cc;
-  --text-muted: #445577;
-  --font-display: 'Orbitron', monospace;
-  --font-body: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+:root{
+  --bg0:#03050e;--bg1:#07091a;--bg2:#0b0f22;--bg3:#10152b;
+  --glass:rgba(11,15,34,0.75);--glass2:rgba(11,15,34,0.92);
+  --border:rgba(90,110,255,0.16);--border2:rgba(90,110,255,0.38);--border3:rgba(90,110,255,0.6);
+  --neon-blue:#4f8eff;--neon-cyan:#00e5ff;--neon-purple:#b06aff;
+  --neon-green:#00ff88;--neon-red:#ff3366;--neon-amber:#ffaa00;--neon-pink:#ff4dd8;
+  --text-primary:#eaf0ff;--text-secondary:#7a90cc;--text-muted:#3d5070;
+  --font-display:'Orbitron',monospace;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
-  background:var(--bg0);
-  color:var(--text-primary);
-  font-family:var(--font-body);
-  min-height:100vh;
-  overflow-x:hidden;
-}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:4px}
+body{background:var(--bg0);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:var(--bg1)}
 ::-webkit-scrollbar-thumb{background:var(--neon-blue);border-radius:2px}
+::selection{background:rgba(79,142,255,0.3);color:var(--text-primary)}
 
-/* NAVBAR */
+/* ── NAVBAR ── */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:1000;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 2rem;height:60px;
-  background:rgba(4,6,15,0.85);
-  backdrop-filter:blur(20px);
+  padding:0 1.75rem;height:58px;
+  background:rgba(3,5,14,0.9);backdrop-filter:blur(24px);
   border-bottom:1px solid var(--border);
 }
 .nav-logo{
-  font-family:var(--font-display);
-  font-size:1.1rem;font-weight:700;
-  background:linear-gradient(135deg,var(--neon-blue),var(--neon-cyan));
+  font-family:var(--font-display);font-size:1rem;font-weight:900;
+  background:linear-gradient(110deg,var(--neon-blue),var(--neon-cyan) 60%,var(--neon-purple));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:2px;cursor:pointer;
+  letter-spacing:3px;cursor:pointer;
 }
-.nav-links{display:flex;gap:0.25rem}
+.nav-links{display:flex;gap:2px}
 .nav-link{
-  padding:0.4rem 0.9rem;border-radius:6px;
-  font-size:0.8rem;font-weight:500;cursor:pointer;
-  color:var(--text-secondary);transition:all 0.2s;
-  border:1px solid transparent;letter-spacing:0.5px;
-  text-transform:uppercase;font-family:var(--font-display);font-size:0.65rem;
+  padding:0.35rem 0.85rem;border-radius:6px;
+  font-size:0.62rem;font-weight:600;cursor:pointer;
+  color:var(--text-muted);transition:all 0.18s;
+  border:1px solid transparent;letter-spacing:1.5px;
+  text-transform:uppercase;font-family:var(--font-display);
 }
-.nav-link:hover,.nav-link.active{
-  color:var(--neon-cyan);border-color:var(--border2);
-  background:rgba(79,142,255,0.08);
-}
+.nav-link:hover{color:var(--neon-cyan);border-color:var(--border);background:rgba(79,142,255,0.06)}
+.nav-link.active{color:var(--neon-cyan);border-color:var(--border2);background:rgba(79,142,255,0.1)}
 
-/* PAGES */
-.page{display:none;padding-top:60px;min-height:100vh}
+/* ── PAGES ── */
+.page{display:none;padding-top:58px;min-height:100vh}
 .page.active{display:block}
+#page-builder.active,#page-game.active,#page-ai.active{display:flex;flex-direction:column}
 
-/* =================== HOME PAGE =================== */
+/* ── BUTTONS ── */
+.btn-primary{
+  padding:0.72rem 1.9rem;border-radius:8px;border:none;cursor:pointer;
+  font-family:var(--font-display);font-size:0.7rem;font-weight:700;letter-spacing:1.5px;
+  background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));
+  color:#fff;transition:all 0.22s;text-transform:uppercase;
+  box-shadow:0 0 24px rgba(79,142,255,0.25);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 32px rgba(79,142,255,0.45)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{
+  padding:0.72rem 1.9rem;border-radius:8px;cursor:pointer;
+  font-family:var(--font-display);font-size:0.7rem;font-weight:700;letter-spacing:1.5px;
+  background:transparent;color:var(--neon-cyan);
+  border:1px solid var(--neon-cyan);transition:all 0.22s;text-transform:uppercase;
+}
+.btn-secondary:hover{background:rgba(0,229,255,0.08);transform:translateY(-2px);box-shadow:0 4px 22px rgba(0,229,255,0.2)}
+.ctrl-btn{
+  width:100%;padding:0.58rem 1rem;border-radius:8px;border:none;cursor:pointer;
+  font-family:var(--font-display);font-size:0.62rem;font-weight:600;letter-spacing:1px;
+  text-transform:uppercase;transition:all 0.18s;margin-bottom:0.38rem;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.ctrl-btn:last-child{margin-bottom:0}
+.ctrl-btn-blue{background:rgba(79,142,255,0.12);color:var(--neon-blue);border:1px solid rgba(79,142,255,0.28)}
+.ctrl-btn-blue:hover{background:rgba(79,142,255,0.22);border-color:var(--neon-blue);box-shadow:0 0 14px rgba(79,142,255,0.2)}
+.ctrl-btn-cyan{background:rgba(0,229,255,0.08);color:var(--neon-cyan);border:1px solid rgba(0,229,255,0.22)}
+.ctrl-btn-cyan:hover{background:rgba(0,229,255,0.18);border-color:var(--neon-cyan)}
+.ctrl-btn-purple{background:rgba(176,106,255,0.1);color:var(--neon-purple);border:1px solid rgba(176,106,255,0.28)}
+.ctrl-btn-purple:hover{background:rgba(176,106,255,0.2);border-color:var(--neon-purple);box-shadow:0 0 14px rgba(176,106,255,0.2)}
+.ctrl-btn-green{background:rgba(0,255,136,0.08);color:var(--neon-green);border:1px solid rgba(0,255,136,0.22)}
+.ctrl-btn-green:hover{background:rgba(0,255,136,0.18);border-color:var(--neon-green)}
+.ctrl-btn-red{background:rgba(255,51,102,0.08);color:var(--neon-red);border:1px solid rgba(255,51,102,0.22)}
+.ctrl-btn-red:hover{background:rgba(255,51,102,0.18);border-color:var(--neon-red)}
+.ctrl-btn-amber{background:rgba(255,170,0,0.08);color:var(--neon-amber);border:1px solid rgba(255,170,0,0.22)}
+.ctrl-btn-amber:hover{background:rgba(255,170,0,0.18);border-color:var(--neon-amber)}
+.ctrl-btn-active{background:rgba(79,142,255,0.28)!important;border-color:var(--neon-blue)!important;box-shadow:0 0 12px rgba(79,142,255,0.25)!important}
+
+/* ── SIDEBAR COMMON ── */
+.sidebar-title{
+  font-family:var(--font-display);font-size:0.62rem;
+  color:var(--text-muted);letter-spacing:2.5px;text-transform:uppercase;
+  padding-bottom:0.5rem;border-bottom:1px solid var(--border);margin-bottom:0.75rem;
+}
+.mode-indicator{
+  padding:0.5rem 0.75rem;border-radius:6px;font-size:0.72rem;
+  font-family:var(--font-mono);
+  background:rgba(0,229,255,0.06);border:1px solid var(--border);
+  color:var(--text-secondary);
+}
+.mode-indicator span{color:var(--neon-cyan);font-weight:500}
+.status-badge{
+  padding:0.45rem 0.75rem;border-radius:8px;
+  font-size:0.72rem;font-family:var(--font-display);font-weight:600;
+  text-align:center;letter-spacing:1px;
+}
+.status-idle{background:rgba(99,120,255,0.08);color:var(--text-secondary);border:1px solid var(--border)}
+.status-found{background:rgba(0,255,136,0.1);color:var(--neon-green);border:1px solid rgba(0,255,136,0.3);box-shadow:0 0 12px rgba(0,255,136,0.1)}
+.status-none{background:rgba(255,51,102,0.1);color:var(--neon-red);border:1px solid rgba(255,51,102,0.3)}
+.status-running{background:rgba(255,170,0,0.1);color:var(--neon-amber);border:1px solid rgba(255,170,0,0.3)}
+.step-panel{
+  padding:0.7rem;border-radius:8px;
+  background:rgba(0,0,0,0.35);border:1px solid var(--border);
+  font-size:0.74rem;font-family:var(--font-mono);
+  color:var(--text-secondary);max-height:200px;overflow-y:auto;line-height:1.9;
+}
+.step-line{padding:1px 0;border-bottom:1px solid rgba(79,142,255,0.06)}
+.step-line:last-child{border-bottom:none}
+.step-ok{color:var(--neon-green)}.step-err{color:var(--neon-red)}
+.step-try{color:var(--neon-amber)}.step-info{color:var(--neon-cyan)}
+.progress-dots{display:flex;gap:5px;justify-content:center;padding:0.4rem;flex-wrap:wrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);transition:all 0.3s}
+.dot.done{background:var(--neon-green);border-color:var(--neon-green);box-shadow:0 0 6px var(--neon-green)}
+
+/* ── HOME ── */
 #page-home{position:relative;overflow:hidden}
-#hero-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.5}
+#hero-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0}
 .hero{
   position:relative;z-index:1;
-  min-height:calc(100vh - 60px);
+  min-height:calc(100vh - 58px);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:4rem 2rem;
 }
 .hero-badge{
   display:inline-flex;align-items:center;gap:0.5rem;
-  padding:0.35rem 1rem;border-radius:20px;
-  background:rgba(79,142,255,0.1);border:1px solid var(--border2);
-  font-size:0.72rem;font-family:var(--font-mono);color:var(--neon-cyan);
-  margin-bottom:1.5rem;letter-spacing:1px;
+  padding:0.3rem 1rem;border-radius:20px;
+  background:rgba(79,142,255,0.08);border:1px solid var(--border2);
+  font-size:0.68rem;font-family:var(--font-mono);color:var(--neon-cyan);
+  margin-bottom:1.5rem;letter-spacing:1.5px;
 }
-.hero-badge span{width:6px;height:6px;border-radius:50%;background:var(--neon-green);display:inline-block;animation:pulse-dot 2s infinite}
-@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.7)}}
+.hero-badge .pulse{width:6px;height:6px;border-radius:50%;background:var(--neon-green);animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.6)}}
 .hero h1{
   font-family:var(--font-display);
-  font-size:clamp(2.5rem,6vw,5rem);
-  font-weight:900;line-height:1.05;
-  margin-bottom:1rem;letter-spacing:-1px;
+  font-size:clamp(2.8rem,6.5vw,5.5rem);
+  font-weight:900;line-height:1.0;
+  margin-bottom:1.1rem;letter-spacing:-1.5px;
 }
 .hero h1 .line1{display:block;color:var(--text-primary)}
 .hero h1 .line2{
   display:block;
-  background:linear-gradient(135deg,var(--neon-blue) 0%,var(--neon-purple) 50%,var(--neon-cyan) 100%);
+  background:linear-gradient(115deg,var(--neon-blue) 0%,var(--neon-purple) 45%,var(--neon-cyan) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 30px rgba(79,142,255,0.4));
 }
-.hero-sub{
-  font-size:1.05rem;color:var(--text-secondary);
-  max-width:560px;line-height:1.7;margin-bottom:2.5rem;
-}
+.hero-sub{font-size:1rem;color:var(--text-secondary);max-width:520px;line-height:1.75;margin-bottom:2.5rem}
 .hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-bottom:3.5rem}
-.btn-primary{
-  padding:0.75rem 2rem;border-radius:8px;border:none;cursor:pointer;
-  font-family:var(--font-display);font-size:0.75rem;font-weight:700;letter-spacing:1.5px;
-  background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));
-  color:#fff;transition:all 0.25s;text-transform:uppercase;
-  box-shadow:0 0 20px rgba(79,142,255,0.3);
-}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 30px rgba(79,142,255,0.5)}
-.btn-secondary{
-  padding:0.75rem 2rem;border-radius:8px;cursor:pointer;
-  font-family:var(--font-display);font-size:0.75rem;font-weight:700;letter-spacing:1.5px;
-  background:transparent;color:var(--neon-cyan);
-  border:1px solid var(--neon-cyan);transition:all 0.25s;text-transform:uppercase;
-}
-.btn-secondary:hover{background:rgba(0,229,255,0.08);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,229,255,0.2)}
 .stats-strip{
-  display:flex;gap:3rem;flex-wrap:wrap;justify-content:center;
-  padding:1.5rem 2rem;border-radius:12px;
-  background:var(--glass);border:1px solid var(--border);
-  backdrop-filter:blur(20px);
+  display:flex;gap:2.5rem;flex-wrap:wrap;justify-content:center;
+  padding:1.25rem 2rem;border-radius:14px;
+  background:var(--glass);border:1px solid var(--border);backdrop-filter:blur(24px);
 }
 .stat-item{text-align:center}
-.stat-num{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--neon-blue)}
-.stat-label{font-size:0.72rem;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+.stat-num{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--neon-blue);letter-spacing:1px}
+.stat-label{font-size:0.65rem;color:var(--text-muted);margin-top:3px;text-transform:uppercase;letter-spacing:1.5px}
 .home-concept{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:1.25rem;padding:3rem 2rem;max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1.1rem;padding:3rem 2rem;max-width:1200px;margin:0 auto;
 }
 .concept-card{
-  padding:1.5rem;border-radius:12px;
+  padding:1.4rem;border-radius:14px;
   background:var(--glass);border:1px solid var(--border);
-  backdrop-filter:blur(20px);transition:all 0.3s;cursor:pointer;
+  backdrop-filter:blur(20px);transition:all 0.28s;cursor:pointer;
+  position:relative;overflow:hidden;
 }
-.concept-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 8px 30px rgba(79,142,255,0.1)}
+.concept-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(79,142,255,0.5),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.concept-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 12px 40px rgba(79,142,255,0.12)}
+.concept-card:hover::before{opacity:1}
 .concept-icon{
-  width:42px;height:42px;border-radius:10px;
+  width:40px;height:40px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.3rem;margin-bottom:1rem;
+  font-size:1.2rem;margin-bottom:0.9rem;
 }
-.concept-card h3{font-family:var(--font-display);font-size:0.85rem;color:var(--neon-cyan);margin-bottom:0.5rem;letter-spacing:1px}
-.concept-card p{font-size:0.85rem;color:var(--text-secondary);line-height:1.6}
+.concept-card h3{font-family:var(--font-display);font-size:0.78rem;color:var(--neon-cyan);margin-bottom:0.45rem;letter-spacing:1px}
+.concept-card p{font-size:0.82rem;color:var(--text-secondary);line-height:1.65}
 
-/* =================== GRAPH BUILDER =================== */
-#page-builder{display:none}
-#page-builder.active{display:flex;flex-direction:column}
-.builder-layout{
-  display:flex;height:calc(100vh - 60px);overflow:hidden;
-}
+/* ── BUILDER ── */
+.builder-layout{display:flex;height:calc(100vh - 58px);overflow:hidden}
 .builder-sidebar{
-  width:280px;min-width:280px;
+  width:272px;min-width:272px;
   background:var(--bg1);border-right:1px solid var(--border);
   display:flex;flex-direction:column;overflow-y:auto;
-  padding:1.25rem;gap:1rem;
+  padding:1.1rem;gap:0.9rem;
 }
-.sidebar-title{
-  font-family:var(--font-display);font-size:0.7rem;
-  color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;
-  padding-bottom:0.5rem;border-bottom:1px solid var(--border);
-}
-.sidebar-section{margin-bottom:0.5rem}
-.sidebar-section .sidebar-title{margin-bottom:0.75rem}
-.ctrl-btn{
-  width:100%;padding:0.6rem 1rem;border-radius:8px;border:none;cursor:pointer;
-  font-family:var(--font-display);font-size:0.65rem;font-weight:600;letter-spacing:1px;
-  text-transform:uppercase;transition:all 0.2s;margin-bottom:0.4rem;
-  display:flex;align-items:center;gap:0.5rem;
-}
-.ctrl-btn-blue{background:rgba(79,142,255,0.15);color:var(--neon-blue);border:1px solid rgba(79,142,255,0.3)}
-.ctrl-btn-blue:hover{background:rgba(79,142,255,0.25);border-color:var(--neon-blue)}
-.ctrl-btn-cyan{background:rgba(0,229,255,0.1);color:var(--neon-cyan);border:1px solid rgba(0,229,255,0.25)}
-.ctrl-btn-cyan:hover{background:rgba(0,229,255,0.2);border-color:var(--neon-cyan)}
-.ctrl-btn-purple{background:rgba(162,89,255,0.12);color:var(--neon-purple);border:1px solid rgba(162,89,255,0.3)}
-.ctrl-btn-purple:hover{background:rgba(162,89,255,0.22);border-color:var(--neon-purple)}
-.ctrl-btn-green{background:rgba(0,255,136,0.1);color:var(--neon-green);border:1px solid rgba(0,255,136,0.25)}
-.ctrl-btn-green:hover{background:rgba(0,255,136,0.2);border-color:var(--neon-green)}
-.ctrl-btn-red{background:rgba(255,51,102,0.1);color:var(--neon-red);border:1px solid rgba(255,51,102,0.25)}
-.ctrl-btn-red:hover{background:rgba(255,51,102,0.2);border-color:var(--neon-red)}
-.ctrl-btn-active{background:rgba(79,142,255,0.3)!important;border-color:var(--neon-blue)!important}
-.mode-indicator{
-  padding:0.5rem 0.75rem;border-radius:6px;font-size:0.75rem;
-  font-family:var(--font-mono);
-  background:rgba(0,229,255,0.08);border:1px solid var(--border);
-  color:var(--text-secondary);
-}
-.mode-indicator span{color:var(--neon-cyan);font-weight:500}
-.step-panel{
-  padding:0.75rem;border-radius:8px;
-  background:rgba(0,0,0,0.3);border:1px solid var(--border);
-  font-size:0.78rem;font-family:var(--font-mono);
-  color:var(--text-secondary);max-height:200px;overflow-y:auto;
-  line-height:1.8;
-}
-.step-line{padding:2px 0;border-bottom:1px solid rgba(99,120,255,0.08)}
-.step-line:last-child{border-bottom:none}
-.step-ok{color:var(--neon-green)}
-.step-err{color:var(--neon-red)}
-.step-try{color:var(--neon-amber)}
-.step-info{color:var(--neon-cyan)}
-.status-badge{
-  padding:0.5rem 0.75rem;border-radius:8px;
-  font-size:0.78rem;font-family:var(--font-display);font-weight:600;
-  text-align:center;letter-spacing:1px;
-}
-.status-idle{background:rgba(99,120,255,0.1);color:var(--text-secondary);border:1px solid var(--border)}
-.status-found{background:rgba(0,255,136,0.1);color:var(--neon-green);border:1px solid rgba(0,255,136,0.3)}
-.status-none{background:rgba(255,51,102,0.1);color:var(--neon-red);border:1px solid rgba(255,51,102,0.3)}
-.status-running{background:rgba(255,170,0,0.1);color:var(--neon-amber);border:1px solid rgba(255,170,0,0.3)}
 .canvas-wrap{
   flex:1;position:relative;overflow:hidden;
-  background:radial-gradient(ellipse at 50% 50%,#0d1830 0%,var(--bg0) 70%);
+  background:radial-gradient(ellipse at 50% 50%,#0c1428 0%,var(--bg0) 70%);
 }
 #graph-canvas{display:block;width:100%;height:100%;cursor:crosshair}
 .canvas-hint{
   position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);
-  padding:0.4rem 1rem;border-radius:20px;
-  background:var(--glass);border:1px solid var(--border);
-  font-size:0.72rem;color:var(--text-muted);
-  backdrop-filter:blur(10px);pointer-events:none;
+  padding:0.38rem 1rem;border-radius:20px;
+  background:var(--glass2);border:1px solid var(--border);
+  font-size:0.68rem;color:var(--text-muted);
+  backdrop-filter:blur(12px);pointer-events:none;
   white-space:nowrap;font-family:var(--font-mono);
 }
-.progress-dots{display:flex;gap:6px;justify-content:center;padding:0.5rem}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--bg3);border:1px solid var(--border)}
-.dot.active{background:var(--neon-blue);border-color:var(--neon-blue);box-shadow:0 0 6px var(--neon-blue)}
-.dot.done{background:var(--neon-green);border-color:var(--neon-green)}
 
-/* =================== GAME MODE =================== */
-.game-layout{
-  display:flex;height:calc(100vh - 60px);overflow:hidden;
-}
+/* ── GAME ── */
+.game-layout{display:flex;height:calc(100vh - 58px);overflow:hidden}
 .game-sidebar{
-  width:260px;min-width:260px;background:var(--bg1);
-  border-right:1px solid var(--border);padding:1.25rem;
-  display:flex;flex-direction:column;gap:1rem;
+  width:252px;min-width:252px;background:var(--bg1);
+  border-right:1px solid var(--border);padding:1.1rem;
+  display:flex;flex-direction:column;gap:0.9rem;overflow-y:auto;
 }
 .score-card{
-  padding:1rem;border-radius:10px;
-  background:linear-gradient(135deg,rgba(79,142,255,0.15),rgba(162,89,255,0.1));
+  padding:0.9rem;border-radius:12px;
+  background:linear-gradient(135deg,rgba(79,142,255,0.13),rgba(176,106,255,0.08));
   border:1px solid var(--border2);text-align:center;
 }
 .score-num{font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--neon-blue)}
-.score-label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.score-label{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px}
 .timer-display{
-  font-family:var(--font-display);font-size:1.4rem;
+  font-family:var(--font-display);font-size:1.3rem;
   color:var(--neon-cyan);text-align:center;
   padding:0.5rem;border-radius:8px;
-  background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);
+  background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.14);
+  transition:color 0.3s;
 }
-.diff-pills{display:flex;gap:0.5rem;flex-wrap:wrap}
+.timer-display.warning{color:var(--neon-red);border-color:rgba(255,51,102,0.3);animation:timer-pulse 0.8s infinite}
+@keyframes timer-pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.diff-pills{display:flex;gap:0.4rem;flex-wrap:wrap}
 .diff-pill{
-  padding:0.35rem 0.75rem;border-radius:20px;font-size:0.7rem;
+  padding:0.3rem 0.65rem;border-radius:20px;font-size:0.65rem;
   font-family:var(--font-display);font-weight:600;cursor:pointer;
-  border:1px solid var(--border);color:var(--text-muted);
-  transition:all 0.2s;letter-spacing:0.5px;
+  border:1px solid var(--border);color:var(--text-muted);transition:all 0.2s;letter-spacing:0.5px;
 }
-.diff-pill.active-easy{background:rgba(0,255,136,0.15);color:var(--neon-green);border-color:var(--neon-green)}
-.diff-pill.active-med{background:rgba(255,170,0,0.15);color:var(--neon-amber);border-color:var(--neon-amber)}
-.diff-pill.active-hard{background:rgba(255,51,102,0.15);color:var(--neon-red);border-color:var(--neon-red)}
+.diff-pill.active-easy{background:rgba(0,255,136,0.12);color:var(--neon-green);border-color:var(--neon-green)}
+.diff-pill.active-med{background:rgba(255,170,0,0.12);color:var(--neon-amber);border-color:var(--neon-amber)}
+.diff-pill.active-hard{background:rgba(255,51,102,0.12);color:var(--neon-red);border-color:var(--neon-red)}
 .game-path-display{
-  padding:0.5rem 0.75rem;border-radius:8px;
+  padding:0.5rem 0.7rem;border-radius:8px;
   background:rgba(0,0,0,0.3);border:1px solid var(--border);
-  font-family:var(--font-mono);font-size:0.8rem;color:var(--text-secondary);
-  min-height:40px;word-break:break-all;
+  font-family:var(--font-mono);font-size:0.76rem;color:var(--text-secondary);
+  min-height:38px;word-break:break-all;line-height:1.6;
 }
 .leaderboard-row{
   display:flex;align-items:center;justify-content:space-between;
-  padding:0.4rem 0.5rem;border-radius:6px;font-size:0.78rem;
-  transition:background 0.2s;
+  padding:0.38rem 0.5rem;border-radius:6px;font-size:0.75rem;transition:background 0.2s;
 }
-.leaderboard-row:hover{background:rgba(79,142,255,0.05)}
-.lb-rank{font-family:var(--font-display);font-size:0.65rem;color:var(--text-muted);width:20px}
+.leaderboard-row:hover{background:rgba(79,142,255,0.06)}
+.lb-rank{font-family:var(--font-display);font-size:0.6rem;color:var(--text-muted);width:22px}
 .lb-name{color:var(--text-primary);font-weight:500}
 .lb-score{font-family:var(--font-mono);color:var(--neon-blue)}
 .game-canvas-wrap{flex:1;position:relative;overflow:hidden}
 #game-canvas{display:block;width:100%;height:100%;cursor:pointer}
 .game-msg{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  font-family:var(--font-display);font-size:1.5rem;font-weight:700;
-  padding:1rem 2.5rem;border-radius:12px;
-  text-align:center;pointer-events:none;
-  animation:fade-msg 2s forwards;display:none;
+  font-family:var(--font-display);font-size:1.4rem;font-weight:700;
+  padding:1rem 2.5rem;border-radius:14px;
+  text-align:center;pointer-events:none;display:none;
 }
-@keyframes fade-msg{0%{opacity:0;transform:translate(-50%,-60%)}20%{opacity:1;transform:translate(-50%,-50%)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-40%)}}
-.game-msg.success{background:rgba(0,255,136,0.15);color:var(--neon-green);border:1px solid rgba(0,255,136,0.3)}
-.game-msg.error{background:rgba(255,51,102,0.15);color:var(--neon-red);border:1px solid rgba(255,51,102,0.3)}
-.game-msg.win{background:linear-gradient(135deg,rgba(79,142,255,0.2),rgba(162,89,255,0.2));color:var(--neon-cyan);border:1px solid var(--border2)}
+@keyframes fade-msg{0%{opacity:0;transform:translate(-50%,-58%) scale(0.9)}15%{opacity:1;transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-42%)}}
+.game-msg.success{background:rgba(0,255,136,0.12);color:var(--neon-green);border:1px solid rgba(0,255,136,0.35)}
+.game-msg.error{background:rgba(255,51,102,0.12);color:var(--neon-red);border:1px solid rgba(255,51,102,0.35)}
+.game-msg.win{background:linear-gradient(135deg,rgba(79,142,255,0.18),rgba(176,106,255,0.18));color:var(--neon-cyan);border:1px solid var(--border2)}
 
-/* =================== SIMULATION =================== */
-.sim-layout{padding:1.5rem 2rem;max-width:1400px;margin:0 auto}
-.sim-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
-.sim-title{font-family:var(--font-display);font-size:1rem;color:var(--neon-cyan);letter-spacing:2px}
-.metrics-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+/* ── SIMULATION ── */
+.sim-layout{padding:1.4rem 2rem;max-width:1400px;margin:0 auto}
+.sim-title{font-family:var(--font-display);font-size:0.9rem;color:var(--neon-cyan);letter-spacing:2.5px}
+.metrics-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
 .metric-card{
-  flex:1;min-width:150px;padding:1rem 1.25rem;border-radius:10px;
-  background:var(--glass);border:1px solid var(--border);
-  backdrop-filter:blur(20px);
+  flex:1;min-width:140px;padding:0.9rem 1.1rem;border-radius:12px;
+  background:var(--glass);border:1px solid var(--border);backdrop-filter:blur(20px);
+  transition:border-color 0.3s;
 }
-.metric-val{font-family:var(--font-display);font-size:1.5rem;font-weight:700}
-.metric-key{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.metric-card:hover{border-color:var(--border2)}
+.metric-val{font-family:var(--font-display);font-size:1.4rem;font-weight:700}
+.metric-key{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:3px}
 .sim-canvas-wrap{
-  border-radius:12px;border:1px solid var(--border);
-  background:radial-gradient(ellipse at 50% 50%,#0a0f20 0%,var(--bg0) 100%);
+  border-radius:14px;border:1px solid var(--border);
+  background:radial-gradient(ellipse at 50% 50%,#09102a 0%,var(--bg0) 100%);
   overflow:hidden;position:relative;
 }
 #sim-canvas{display:block;width:100%;height:420px}
-.sim-controls{display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap}
+.sim-controls{display:flex;gap:0.6rem;margin-top:0.9rem;flex-wrap:wrap;align-items:center}
+.speed-btn{
+  padding:0.38rem 0.85rem;border-radius:6px;border:1px solid var(--border);
+  font-family:var(--font-display);font-size:0.62rem;color:var(--text-muted);
+  background:transparent;cursor:pointer;transition:all 0.18s;letter-spacing:1px;
+}
+.speed-btn:hover,.speed-btn.active{background:rgba(79,142,255,0.12);color:var(--neon-blue);border-color:var(--border2)}
 
-/* =================== AI SOLVER =================== */
-.ai-layout{display:flex;height:calc(100vh - 60px);overflow:hidden}
-.ai-main{flex:1;position:relative;overflow:hidden}
+/* ── AI SOLVER ── */
+.ai-layout{display:flex;height:calc(100vh - 58px);overflow:hidden}
+.ai-main{flex:1;position:relative;overflow:hidden;background:radial-gradient(ellipse at 40% 50%,#090e22 0%,var(--bg0) 70%)}
 #ai-canvas{display:block;width:100%;height:100%}
 .ai-sidebar{
-  width:300px;min-width:300px;background:var(--bg1);
+  width:320px;min-width:320px;background:var(--bg1);
   border-left:1px solid var(--border);
-  display:flex;flex-direction:column;gap:0;
-  overflow:hidden;
+  display:flex;flex-direction:column;overflow:hidden;
 }
+.ai-sidebar-top{padding:1.1rem;border-bottom:1px solid var(--border)}
 .ai-log{
-  flex:1;overflow-y:auto;padding:1rem;
-  font-family:var(--font-mono);font-size:0.73rem;
-  line-height:1.9;
+  flex:1;overflow-y:auto;padding:0.9rem;
+  font-family:var(--font-mono);font-size:0.7rem;line-height:2;
 }
-.log-entry{display:flex;gap:0.5rem;padding:2px 0}
-.log-icon{width:16px;text-align:center;flex-shrink:0}
-.log-try{color:var(--neon-amber)}
-.log-ok{color:var(--neon-green)}
-.log-back{color:var(--neon-red)}
-.log-info{color:var(--neon-cyan)}
+.log-entry{display:flex;gap:0.5rem;padding:1px 0;border-bottom:1px solid rgba(79,142,255,0.04)}
+.log-entry:last-child{border-bottom:none}
+.log-icon{width:14px;text-align:center;flex-shrink:0;margin-top:1px}
+.log-try{color:var(--neon-amber)}.log-ok{color:var(--neon-green)}
+.log-back{color:var(--neon-red)}.log-info{color:var(--neon-cyan)}
 .ai-explain{
   padding:1rem;border-top:1px solid var(--border);
-  background:rgba(0,0,0,0.2);
-  font-size:0.8rem;color:var(--text-secondary);line-height:1.6;
+  background:rgba(0,0,0,0.25);
+  font-size:0.78rem;color:var(--text-secondary);line-height:1.65;
+  flex-shrink:0;
 }
-.ai-explain strong{color:var(--neon-purple);font-family:var(--font-display);font-size:0.7rem;letter-spacing:1px}
+.ai-explain strong{color:var(--neon-purple);font-family:var(--font-display);font-size:0.65rem;letter-spacing:1.5px}
 .think-anim{
-  display:flex;gap:4px;align-items:center;padding:0.75rem;
-  border-top:1px solid var(--border);
+  display:none;gap:5px;align-items:center;padding:0.7rem 1.1rem;
+  border-bottom:1px solid var(--border);background:rgba(176,106,255,0.05);
 }
+.think-anim.visible{display:flex}
 .think-dot{width:5px;height:5px;border-radius:50%;background:var(--neon-purple)}
 .think-dot:nth-child(1){animation:think 1.2s 0s infinite}
 .think-dot:nth-child(2){animation:think 1.2s 0.2s infinite}
 .think-dot:nth-child(3){animation:think 1.2s 0.4s infinite}
-@keyframes think{0%,80%,100%{transform:scale(0.8);opacity:0.4}40%{transform:scale(1.3);opacity:1}}
+@keyframes think{0%,80%,100%{transform:scale(0.7);opacity:0.3}40%{transform:scale(1.4);opacity:1}}
 
-/* =================== LEARN PAGE =================== */
-.learn-layout{max-width:1100px;margin:0 auto;padding:2rem}
-.learn-hero{
-  text-align:center;padding:2.5rem 1rem;margin-bottom:2rem;
+/* ── AI CUSTOM INPUT ── */
+.ai-input-panel{
+  padding:1.1rem;border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,0.2);
 }
-.learn-hero h1{font-family:var(--font-display);font-size:clamp(1.5rem,4vw,2.5rem);margin-bottom:0.75rem;color:var(--neon-cyan)}
-.learn-hero p{color:var(--text-secondary);font-size:0.95rem;max-width:600px;margin:0 auto;line-height:1.7}
-.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
-@media(max-width:700px){.concept-grid{grid-template-columns:1fr}}
+.ai-input-tabs{display:flex;gap:4px;margin-bottom:0.8rem}
+.ai-tab{
+  flex:1;padding:0.35rem;border-radius:6px;font-family:var(--font-display);
+  font-size:0.58rem;letter-spacing:1px;text-align:center;cursor:pointer;
+  border:1px solid var(--border);color:var(--text-muted);transition:all 0.18s;
+}
+.ai-tab.active{background:rgba(176,106,255,0.15);color:var(--neon-purple);border-color:rgba(176,106,255,0.4)}
+.input-section{display:none}
+.input-section.active{display:block}
+.input-label{font-size:0.68rem;color:var(--text-muted);font-family:var(--font-display);letter-spacing:1px;margin-bottom:0.4rem;display:block;text-transform:uppercase}
+.input-field{
+  width:100%;padding:0.5rem 0.7rem;border-radius:7px;
+  background:rgba(0,0,0,0.4);border:1px solid var(--border);
+  color:var(--text-primary);font-family:var(--font-mono);font-size:0.75rem;
+  outline:none;transition:border-color 0.18s;resize:vertical;min-height:60px;
+}
+.input-field:focus{border-color:var(--border2);background:rgba(0,0,0,0.5)}
+.input-field::placeholder{color:var(--text-muted)}
+.input-row{display:flex;gap:0.4rem;margin-bottom:0.5rem}
+.input-small{
+  flex:1;padding:0.45rem 0.6rem;border-radius:7px;
+  background:rgba(0,0,0,0.4);border:1px solid var(--border);
+  color:var(--text-primary);font-family:var(--font-mono);font-size:0.75rem;
+  outline:none;transition:border-color 0.18s;
+}
+.input-small:focus{border-color:var(--border2)}
+.input-small::placeholder{color:var(--text-muted)}
+.input-hint{font-size:0.65rem;color:var(--text-muted);font-family:var(--font-mono);margin-bottom:0.6rem;line-height:1.5}
+.input-error{
+  font-size:0.68rem;color:var(--neon-red);font-family:var(--font-mono);
+  padding:0.4rem 0.6rem;border-radius:6px;
+  background:rgba(255,51,102,0.08);border:1px solid rgba(255,51,102,0.2);
+  margin-top:0.4rem;display:none;
+}
+.matrix-grid{
+  display:grid;gap:3px;margin-bottom:0.6rem;
+}
+.matrix-cell{
+  width:100%;aspect-ratio:1;border-radius:4px;border:1px solid var(--border);
+  background:rgba(0,0,0,0.4);color:var(--text-primary);
+  font-family:var(--font-mono);font-size:0.7rem;text-align:center;
+  cursor:pointer;transition:all 0.15s;
+}
+.matrix-cell.on{background:rgba(79,142,255,0.25);border-color:var(--neon-blue);color:var(--neon-blue)}
+.matrix-cell.on:hover{background:rgba(79,142,255,0.38)}
+.matrix-cell:hover{border-color:var(--border2)}
+.node-count-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.6rem}
+.node-count-row label{font-size:0.68rem;color:var(--text-muted);font-family:var(--font-display);letter-spacing:1px;white-space:nowrap;text-transform:uppercase}
+.node-count-input{
+  width:52px;padding:0.35rem 0.5rem;border-radius:6px;
+  background:rgba(0,0,0,0.4);border:1px solid var(--border);
+  color:var(--text-primary);font-family:var(--font-mono);font-size:0.75rem;
+  outline:none;text-align:center;transition:border-color 0.18s;
+}
+.node-count-input:focus{border-color:var(--border2)}
+.speed-control-row{display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem}
+.speed-control-row label{font-size:0.65rem;color:var(--text-muted);font-family:var(--font-display);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.speed-slider{flex:1;-webkit-appearance:none;height:3px;border-radius:2px;background:var(--border);outline:none}
+.speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--neon-purple);cursor:pointer;border:2px solid var(--bg1)}
+.speed-val{font-size:0.68rem;color:var(--neon-purple);font-family:var(--font-mono);min-width:28px;text-align:right}
+
+/* ── LEARN ── */
+.learn-layout{max-width:1080px;margin:0 auto;padding:2rem}
+.learn-hero{text-align:center;padding:2.5rem 1rem;margin-bottom:2rem}
+.learn-hero h1{font-family:var(--font-display);font-size:clamp(1.5rem,4vw,2.4rem);margin-bottom:0.7rem;color:var(--neon-cyan)}
+.learn-hero p{color:var(--text-secondary);font-size:0.92rem;max-width:560px;margin:0 auto;line-height:1.7}
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-bottom:2rem}
+@media(max-width:680px){.concept-grid{grid-template-columns:1fr}}
 .learn-card{
-  padding:1.5rem;border-radius:12px;
-  background:var(--glass);border:1px solid var(--border);
-  backdrop-filter:blur(20px);
+  padding:1.4rem;border-radius:14px;
+  background:var(--glass);border:1px solid var(--border);backdrop-filter:blur(20px);
 }
 .learn-card h2{
-  font-family:var(--font-display);font-size:0.85rem;
-  letter-spacing:1.5px;margin-bottom:1rem;
-  padding-bottom:0.5rem;border-bottom:1px solid var(--border);
+  font-family:var(--font-display);font-size:0.8rem;letter-spacing:1.5px;
+  margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);
 }
-.learn-card p{font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem}
+.learn-card p{font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:0.9rem}
 .mini-graph-wrap{height:130px;position:relative;overflow:hidden;border-radius:8px;background:rgba(0,0,0,0.3)}
-.info-strip{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:1rem;margin-bottom:2rem;
-}
-.info-tile{
-  padding:1.25rem;border-radius:10px;
-  background:var(--glass);border:1px solid var(--border);
-}
-.info-tile h3{font-family:var(--font-display);font-size:0.7rem;color:var(--neon-purple);letter-spacing:1px;margin-bottom:0.5rem}
-.info-tile p{font-size:0.82rem;color:var(--text-secondary);line-height:1.6}
+.mini-graph-wrap canvas{width:100%;height:100%}
+.info-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0.9rem;margin-bottom:2rem}
+.info-tile{padding:1.1rem;border-radius:10px;background:var(--glass);border:1px solid var(--border)}
+.info-tile h3{font-family:var(--font-display);font-size:0.65rem;color:var(--neon-purple);letter-spacing:1.5px;margin-bottom:0.45rem}
+.info-tile p{font-size:0.8rem;color:var(--text-secondary);line-height:1.6}
 .theorem-box{
-  padding:1.25rem 1.5rem;border-radius:10px;margin-bottom:2rem;
-  background:linear-gradient(135deg,rgba(162,89,255,0.08),rgba(79,142,255,0.08));
-  border:1px solid rgba(162,89,255,0.25);
+  padding:1.1rem 1.4rem;border-radius:12px;margin-bottom:2rem;
+  background:linear-gradient(135deg,rgba(176,106,255,0.07),rgba(79,142,255,0.07));
+  border:1px solid rgba(176,106,255,0.22);
 }
-.theorem-box h3{font-family:var(--font-display);font-size:0.8rem;color:var(--neon-purple);margin-bottom:0.5rem;letter-spacing:1px}
-.theorem-box p{font-size:0.85rem;color:var(--text-secondary);line-height:1.7}
+.theorem-box h3{font-family:var(--font-display);font-size:0.75rem;color:var(--neon-purple);margin-bottom:0.5rem;letter-spacing:1px}
+.theorem-box p{font-size:0.83rem;color:var(--text-secondary);line-height:1.7}
 .theorem-box em{color:var(--neon-cyan);font-style:normal;font-family:var(--font-mono)}
 
-/* TOAST */
+/* ── TOAST ── */
 .toast{
   position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;
-  padding:0.75rem 1.25rem;border-radius:10px;
-  font-size:0.82rem;font-family:var(--font-display);font-weight:600;
-  letter-spacing:0.5px;
+  padding:0.7rem 1.2rem;border-radius:10px;
+  font-size:0.78rem;font-family:var(--font-display);font-weight:600;letter-spacing:0.5px;
   backdrop-filter:blur(20px);
-  transform:translateY(100px);opacity:0;
-  transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  transform:translateY(80px);opacity:0;
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
 .toast.show{transform:translateY(0);opacity:1}
-.toast-success{background:rgba(0,255,136,0.15);color:var(--neon-green);border:1px solid rgba(0,255,136,0.3)}
-.toast-error{background:rgba(255,51,102,0.15);color:var(--neon-red);border:1px solid rgba(255,51,102,0.3)}
-.toast-info{background:rgba(79,142,255,0.15);color:var(--neon-blue);border:1px solid rgba(79,142,255,0.3)}
+.toast-success{background:rgba(0,255,136,0.12);color:var(--neon-green);border:1px solid rgba(0,255,136,0.3)}
+.toast-error{background:rgba(255,51,102,0.12);color:var(--neon-red);border:1px solid rgba(255,51,102,0.3)}
+.toast-info{background:rgba(79,142,255,0.12);color:var(--neon-blue);border:1px solid rgba(79,142,255,0.3)}
 
-/* NODE/EDGE LABELS */
-.edge-weight{font-family:var(--font-mono);font-size:0.7rem;color:var(--neon-purple)}
+/* ── DIVIDER ── */
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0.5rem 0}
 </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav>
   <div class="nav-logo" onclick="showPage('home')">PATHFORGE</div>
   <div class="nav-links">
@@ -427,108 +466,71 @@ nav{
   </div>
 </nav>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- ========== HOME PAGE ========== -->
+<!-- ===== HOME ===== -->
 <div class="page active" id="page-home">
   <canvas id="hero-canvas"></canvas>
   <div class="hero">
-    <div class="hero-badge"><span></span>DISCRETE MATHEMATICS · GRAPH THEORY</div>
+    <div class="hero-badge"><span class="pulse"></span>DISCRETE MATHEMATICS · GRAPH THEORY</div>
     <h1>
       <span class="line1">Explore Every</span>
       <span class="line2">Path Possible</span>
     </h1>
-    <p class="hero-sub">
-      Discover Hamiltonian paths and circuits through interactive graph building,
-      animated algorithms, and real-world simulations.
-    </p>
+    <p class="hero-sub">Discover Hamiltonian paths and circuits through interactive graph building, animated algorithms, and real-world simulations.</p>
     <div class="hero-ctas">
       <button class="btn-primary" onclick="showPage('builder')">⬡ Start Building</button>
       <button class="btn-secondary" onclick="showPage('game')">▶ Play Game</button>
     </div>
     <div class="stats-strip">
-      <div class="stat-item"><div class="stat-num">NP</div><div class="stat-label">Complexity Class</div></div>
-      <div class="stat-item"><div class="stat-num">1859</div><div class="stat-label">Year Discovered</div></div>
+      <div class="stat-item"><div class="stat-num">NP</div><div class="stat-label">Complexity</div></div>
+      <div class="stat-item"><div class="stat-num">1859</div><div class="stat-label">Year Found</div></div>
       <div class="stat-item"><div class="stat-num">O(N!)</div><div class="stat-label">Brute Force</div></div>
-      <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Real-World Uses</div></div>
+      <div class="stat-item"><div class="stat-num">2ⁿ·n²</div><div class="stat-label">DP Best</div></div>
     </div>
   </div>
   <div class="home-concept">
-    <div class="concept-card" onclick="showPage('builder')">
-      <div class="concept-icon" style="background:rgba(79,142,255,0.15)">⬡</div>
-      <h3>Graph Builder</h3>
-      <p>Create custom graphs, add nodes and edges, then watch the algorithm find Hamiltonian paths with animated traversal.</p>
-    </div>
-    <div class="concept-card" onclick="showPage('game')">
-      <div class="concept-icon" style="background:rgba(0,229,255,0.1)">🎮</div>
-      <h3>Game Mode</h3>
-      <p>Challenge yourself to find the path manually. Race against the clock with three difficulty levels and a live leaderboard.</p>
-    </div>
-    <div class="concept-card" onclick="showPage('sim')">
-      <div class="concept-icon" style="background:rgba(0,255,136,0.1)">🚚</div>
-      <h3>Delivery Simulation</h3>
-      <p>See Hamiltonian paths in action as a delivery truck navigates through city nodes visiting every location once.</p>
-    </div>
-    <div class="concept-card" onclick="showPage('ai')">
-      <div class="concept-icon" style="background:rgba(162,89,255,0.12)">🤖</div>
-      <h3>AI Solver</h3>
-      <p>Watch the backtracking algorithm think in real-time, exploring paths, hitting dead ends, and finding the solution.</p>
-    </div>
-    <div class="concept-card" onclick="showPage('learn')">
-      <div class="concept-icon" style="background:rgba(255,170,0,0.1)">📚</div>
-      <h3>Learn</h3>
-      <p>Understand Hamiltonian paths vs circuits, Ore's theorem, why no solution exists for some graphs, and real-world applications.</p>
-    </div>
+    <div class="concept-card" onclick="showPage('builder')"><div class="concept-icon" style="background:rgba(79,142,255,0.14)">⬡</div><h3>Graph Builder</h3><p>Create custom graphs, add nodes and edges, then watch the backtracking algorithm find Hamiltonian paths with step-by-step animation.</p></div>
+    <div class="concept-card" onclick="showPage('game')"><div class="concept-icon" style="background:rgba(0,229,255,0.1)">🎮</div><h3>Game Mode</h3><p>Challenge yourself to find the path manually. Race against the clock with three difficulty levels and a real-time leaderboard.</p></div>
+    <div class="concept-card" onclick="showPage('sim')"><div class="concept-icon" style="background:rgba(0,255,136,0.1)">🚚</div><h3>Delivery Simulation</h3><p>Watch a delivery truck navigate through city nodes along a Hamiltonian path, tracking efficiency, distance, and time in real-time.</p></div>
+    <div class="concept-card" onclick="showPage('ai')"><div class="concept-icon" style="background:rgba(176,106,255,0.12)">🤖</div><h3>AI Solver</h3><p>Input your own graph via adjacency matrix, edge list, or node-count — then watch the AI backtrack in real time to find the solution.</p></div>
+    <div class="concept-card" onclick="showPage('learn')"><div class="concept-icon" style="background:rgba(255,170,0,0.1)">📚</div><h3>Learn</h3><p>Understand Hamiltonian paths vs circuits, Ore's theorem, why some graphs have no solution, and real-world applications.</p></div>
   </div>
 </div>
 
-<!-- ========== GRAPH BUILDER ========== -->
+<!-- ===== BUILDER ===== -->
 <div class="page" id="page-builder">
   <div class="builder-layout">
     <div class="builder-sidebar">
-      <div class="sidebar-title">Mode</div>
-      <div style="display:flex;gap:0.4rem;margin-bottom:0.25rem">
+      <div class="sidebar-title">Interaction Mode</div>
+      <div style="display:flex;gap:0.4rem">
         <button class="ctrl-btn ctrl-btn-blue ctrl-btn-active" id="btn-mode-node" onclick="setMode('node')" style="flex:1;justify-content:center">⬡ Node</button>
         <button class="ctrl-btn ctrl-btn-cyan" id="btn-mode-edge" onclick="setMode('edge')" style="flex:1;justify-content:center">— Edge</button>
       </div>
       <div class="mode-indicator">Mode: <span id="mode-label">Add Node</span></div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-title">Algorithms</div>
-        <button class="ctrl-btn ctrl-btn-purple" onclick="findPath(false)">⚡ Find Hamiltonian Path</button>
-        <button class="ctrl-btn ctrl-btn-purple" onclick="findPath(true)">◎ Find Hamiltonian Circuit</button>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-title">Controls</div>
-        <button class="ctrl-btn ctrl-btn-blue" onclick="generateRandom()">⟳ Random Graph</button>
-        <button class="ctrl-btn ctrl-btn-red" onclick="resetGraph()">✕ Reset Graph</button>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-title">Status</div>
-        <div class="status-badge status-idle" id="algo-status">READY</div>
-      </div>
-
-      <div class="sidebar-section" style="flex:1">
-        <div class="sidebar-title">Algorithm Log</div>
-        <div class="step-panel" id="step-log"><span class="step-info">Click canvas to add nodes. Connect them in Edge mode. Then run the algorithm.</span></div>
-      </div>
-
-      <div>
-        <div class="sidebar-title" style="margin-bottom:0.5rem">Path Progress</div>
-        <div class="progress-dots" id="progress-dots"></div>
-      </div>
+      <div class="section-divider"></div>
+      <div class="sidebar-title">Algorithms</div>
+      <button class="ctrl-btn ctrl-btn-purple" onclick="findPath(false)">⚡ Find Hamiltonian Path</button>
+      <button class="ctrl-btn ctrl-btn-purple" onclick="findPath(true)">◎ Find Hamiltonian Circuit</button>
+      <div class="section-divider"></div>
+      <div class="sidebar-title">Graph Controls</div>
+      <button class="ctrl-btn ctrl-btn-blue" onclick="generateRandom()">⟳ Random Graph</button>
+      <button class="ctrl-btn ctrl-btn-red" onclick="resetGraph()">✕ Reset Graph</button>
+      <div class="sidebar-title">Status</div>
+      <div class="status-badge status-idle" id="algo-status">READY</div>
+      <div class="sidebar-title" style="flex:1">Algorithm Log</div>
+      <div class="step-panel" id="step-log"><span class="step-info">Click canvas to add nodes. Switch to Edge mode to connect them. Then run the algorithm.</span></div>
+      <div class="sidebar-title" style="margin-bottom:0.4rem">Path Progress</div>
+      <div class="progress-dots" id="progress-dots"></div>
     </div>
     <div class="canvas-wrap">
       <canvas id="graph-canvas"></canvas>
-      <div class="canvas-hint" id="builder-hint">Click to add nodes · Switch to Edge mode to connect</div>
+      <div class="canvas-hint">Click to add nodes · Edge mode to connect · Drag to reposition</div>
     </div>
   </div>
 </div>
 
-<!-- ========== GAME MODE ========== -->
+<!-- ===== GAME ===== -->
 <div class="page" id="page-game">
   <div class="game-layout">
     <div class="game-sidebar">
@@ -538,35 +540,25 @@ nav{
         <div class="score-label">Points</div>
       </div>
       <div class="timer-display" id="game-timer">60s</div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-title">Difficulty</div>
-        <div class="diff-pills">
-          <div class="diff-pill active-easy" onclick="setDifficulty('easy')">Easy</div>
-          <div class="diff-pill" onclick="setDifficulty('medium')">Medium</div>
-          <div class="diff-pill" onclick="setDifficulty('hard')">Hard</div>
-        </div>
+      <div class="sidebar-title">Difficulty</div>
+      <div class="diff-pills">
+        <div class="diff-pill active-easy" onclick="setDifficulty('easy')">Easy</div>
+        <div class="diff-pill" onclick="setDifficulty('medium')">Medium</div>
+        <div class="diff-pill" onclick="setDifficulty('hard')">Hard</div>
       </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-title">Your Path</div>
-        <div class="game-path-display" id="game-path-display">—</div>
-      </div>
-
-      <div style="display:flex;gap:0.5rem">
+      <div class="sidebar-title">Your Path</div>
+      <div class="game-path-display" id="game-path-display">—</div>
+      <div style="display:flex;gap:0.4rem">
         <button class="ctrl-btn ctrl-btn-blue" onclick="startGame()" style="flex:1;justify-content:center">▶ New Game</button>
         <button class="ctrl-btn ctrl-btn-red" onclick="resetGamePath()" style="flex:1;justify-content:center">↺ Reset</button>
       </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-title">Leaderboard</div>
-        <div id="leaderboard">
-          <div class="leaderboard-row"><span class="lb-rank">#1</span><span class="lb-name">NeuralGhost</span><span class="lb-score">2840</span></div>
-          <div class="leaderboard-row"><span class="lb-rank">#2</span><span class="lb-name">PathFinder</span><span class="lb-score">2215</span></div>
-          <div class="leaderboard-row"><span class="lb-rank">#3</span><span class="lb-name">GraphMaster</span><span class="lb-score">1980</span></div>
-          <div class="leaderboard-row"><span class="lb-rank">#4</span><span class="lb-name">CyberRoute</span><span class="lb-score">1450</span></div>
-          <div class="leaderboard-row" id="player-row" style="display:none"><span class="lb-rank">You</span><span class="lb-name">Player</span><span class="lb-score" id="player-score">0</span></div>
-        </div>
+      <div class="sidebar-title">Leaderboard</div>
+      <div id="leaderboard">
+        <div class="leaderboard-row"><span class="lb-rank">#1</span><span class="lb-name">NeuralGhost</span><span class="lb-score">2840</span></div>
+        <div class="leaderboard-row"><span class="lb-rank">#2</span><span class="lb-name">PathFinder</span><span class="lb-score">2215</span></div>
+        <div class="leaderboard-row"><span class="lb-rank">#3</span><span class="lb-name">GraphMaster</span><span class="lb-score">1980</span></div>
+        <div class="leaderboard-row"><span class="lb-rank">#4</span><span class="lb-name">CyberRoute</span><span class="lb-score">1450</span></div>
+        <div class="leaderboard-row" id="player-row" style="display:none"><span class="lb-rank">★ You</span><span class="lb-name">Player</span><span class="lb-score" id="player-score">0</span></div>
       </div>
     </div>
     <div class="game-canvas-wrap">
@@ -576,18 +568,17 @@ nav{
   </div>
 </div>
 
-<!-- ========== SIMULATION ========== -->
+<!-- ===== SIMULATION ===== -->
 <div class="page" id="page-sim">
   <div class="sim-layout">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:1rem">
       <div>
         <div class="sim-title">🚚 DELIVERY ROUTE SIMULATION</div>
-        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px">Hamiltonian path applied to real logistics</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;font-family:var(--font-mono)">Hamiltonian path applied to real logistics</div>
       </div>
-      <div style="display:flex;gap:0.5rem">
-        <button class="ctrl-btn ctrl-btn-blue" onclick="startSimulation()" style="width:auto;padding:0.5rem 1.25rem">▶ Start Route</button>
-        <button class="ctrl-btn ctrl-btn-cyan" onclick="compareRoutes()" style="width:auto;padding:0.5rem 1.25rem">⇄ Compare</button>
-        <button class="ctrl-btn ctrl-btn-red" onclick="resetSim()" style="width:auto;padding:0.5rem 1.25rem">↺ Reset</button>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        <button class="ctrl-btn ctrl-btn-green" onclick="startSimulation()" style="width:auto;padding:0.45rem 1.1rem">▶ Start Route</button>
+        <button class="ctrl-btn ctrl-btn-blue" onclick="resetSim()" style="width:auto;padding:0.45rem 1.1rem">↺ New City</button>
       </div>
     </div>
     <div class="metrics-row">
@@ -596,108 +587,152 @@ nav{
       <div class="metric-card"><div class="metric-val" id="met-houses" style="color:var(--neon-purple)">0/10</div><div class="metric-key">Houses Visited</div></div>
       <div class="metric-card"><div class="metric-val" id="met-time" style="color:var(--neon-amber)">0s</div><div class="metric-key">Time Elapsed</div></div>
     </div>
-    <div class="sim-canvas-wrap">
-      <canvas id="sim-canvas"></canvas>
-    </div>
+    <div class="sim-canvas-wrap"><canvas id="sim-canvas"></canvas></div>
     <div class="sim-controls">
-      <button class="ctrl-btn ctrl-btn-blue" onclick="setSpeeed(1)" style="width:auto;padding:0.4rem 1rem">1× Speed</button>
-      <button class="ctrl-btn ctrl-btn-blue" onclick="setSpeeed(2)" style="width:auto;padding:0.4rem 1rem">2× Speed</button>
-      <button class="ctrl-btn ctrl-btn-blue" onclick="setSpeeed(0.5)" style="width:auto;padding:0.4rem 1rem">0.5× Speed</button>
+      <span style="font-size:0.65rem;color:var(--text-muted);font-family:var(--font-display);letter-spacing:1px;text-transform:uppercase">Speed:</span>
+      <button class="speed-btn" onclick="setSpeeed(0.5)">0.5×</button>
+      <button class="speed-btn active" onclick="setSpeeed(1)">1×</button>
+      <button class="speed-btn" onclick="setSpeeed(2)">2×</button>
+      <button class="speed-btn" onclick="setSpeeed(3)">3×</button>
     </div>
   </div>
 </div>
 
-<!-- ========== AI SOLVER ========== -->
+<!-- ===== AI SOLVER ===== -->
 <div class="page" id="page-ai">
   <div class="ai-layout">
-    <div class="ai-main">
-      <canvas id="ai-canvas"></canvas>
-    </div>
+    <div class="ai-main"><canvas id="ai-canvas"></canvas></div>
     <div class="ai-sidebar">
-      <div style="padding:1rem;border-bottom:1px solid var(--border)">
-        <div class="sidebar-title">AI Solver Controls</div>
-        <button class="ctrl-btn ctrl-btn-purple" onclick="startAiSolver()" style="margin-top:0.5rem">⚡ Run Backtracking</button>
-        <button class="ctrl-btn ctrl-btn-blue" onclick="genAiGraph()" style="margin-top:0">⟳ New Graph</button>
-        <button class="ctrl-btn ctrl-btn-red" onclick="resetAi()" style="margin-top:0">↺ Reset</button>
+
+      <!-- Controls -->
+      <div class="ai-sidebar-top">
+        <div class="sidebar-title">AI Solver</div>
+        <button class="ctrl-btn ctrl-btn-purple" onclick="startAiSolver()">⚡ Run Backtracking</button>
+        <button class="ctrl-btn ctrl-btn-blue" onclick="genAiGraph()">⟳ Random Graph</button>
+        <button class="ctrl-btn ctrl-btn-red" onclick="resetAi()">↺ Reset</button>
+        <div class="speed-control-row">
+          <label>Speed</label>
+          <input type="range" class="speed-slider" min="1" max="10" value="5" id="ai-speed-slider" oninput="updateAiSpeed(this.value)">
+          <span class="speed-val" id="ai-speed-val">5×</span>
+        </div>
       </div>
-      <div class="think-anim" id="think-anim" style="display:none">
+
+      <!-- Custom Input Panel -->
+      <div class="ai-input-panel">
+        <div class="sidebar-title">Custom Graph Input</div>
+        <div class="ai-input-tabs">
+          <div class="ai-tab active" onclick="switchAiTab('matrix')">Matrix</div>
+          <div class="ai-tab" onclick="switchAiTab('edges')">Edge List</div>
+          <div class="ai-tab" onclick="switchAiTab('preset')">Presets</div>
+        </div>
+
+        <!-- Adjacency Matrix Tab -->
+        <div class="input-section active" id="tab-matrix">
+          <div class="node-count-row">
+            <label>Nodes:</label>
+            <input type="number" class="node-count-input" id="matrix-node-count" value="5" min="2" max="8" oninput="buildMatrixGrid()">
+            <button class="ctrl-btn ctrl-btn-cyan" onclick="buildMatrixGrid()" style="width:auto;padding:0.3rem 0.6rem;margin:0;font-size:0.58rem">Resize</button>
+          </div>
+          <div class="input-hint">Click cells to toggle edges. Diagonal = self (disabled).</div>
+          <div id="matrix-grid-wrap"></div>
+          <div class="input-error" id="matrix-error"></div>
+          <button class="ctrl-btn ctrl-btn-green" onclick="loadFromMatrix()" style="margin-top:0.5rem">↗ Load Graph</button>
+        </div>
+
+        <!-- Edge List Tab -->
+        <div class="input-section" id="tab-edges">
+          <label class="input-label">Node Count</label>
+          <div class="input-row">
+            <input type="number" class="input-small" id="edge-node-count" placeholder="e.g. 5" min="2" max="12" value="5">
+          </div>
+          <label class="input-label">Edge List</label>
+          <textarea class="input-field" id="edge-list-input" placeholder="0-1&#10;1-2&#10;2-3&#10;3-4&#10;0-3&#10;1-4" rows="5"></textarea>
+          <div class="input-hint">One edge per line: A-B or A,B format. Nodes are 0-indexed.</div>
+          <div class="input-error" id="edge-error"></div>
+          <button class="ctrl-btn ctrl-btn-green" onclick="loadFromEdgeList()">↗ Load Graph</button>
+        </div>
+
+        <!-- Presets Tab -->
+        <div class="input-section" id="tab-preset">
+          <div class="input-hint" style="margin-bottom:0.6rem">Famous graphs from graph theory. Click to load instantly.</div>
+          <button class="ctrl-btn ctrl-btn-blue" onclick="loadPreset('petersen')">Petersen Graph (no Ham. circuit)</button>
+          <button class="ctrl-btn ctrl-btn-blue" onclick="loadPreset('k5')">Complete K₅ (Ham. circuit exists)</button>
+          <button class="ctrl-btn ctrl-btn-blue" onclick="loadPreset('cycle6')">Cycle C₆ (Ham. circuit)</button>
+          <button class="ctrl-btn ctrl-btn-blue" onclick="loadPreset('path5')">Path P₅ (Ham. path only)</button>
+          <button class="ctrl-btn ctrl-btn-amber" onclick="loadPreset('nosol')">No Solution Graph</button>
+        </div>
+      </div>
+
+      <!-- Thinking indicator -->
+      <div class="think-anim" id="think-anim">
         <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
-        <span style="font-size:0.75rem;color:var(--neon-purple);font-family:var(--font-display);letter-spacing:1px;margin-left:4px">THINKING</span>
+        <span style="font-size:0.7rem;color:var(--neon-purple);font-family:var(--font-display);letter-spacing:1.5px;margin-left:5px">THINKING</span>
       </div>
-      <div class="ai-log" id="ai-log"><span style="color:var(--text-muted);font-size:0.75rem">Click "Run Backtracking" to watch the AI solve the graph step by step.</span></div>
+
+      <!-- Log -->
+      <div class="ai-log" id="ai-log">
+        <span style="color:var(--text-muted);font-size:0.72rem">Load a custom graph or click "Random Graph", then hit Run Backtracking to watch the AI solve step by step.</span>
+      </div>
+
+      <!-- Explain -->
       <div class="ai-explain" id="ai-explain">
         <strong>HOW IT WORKS</strong><br><br>
-        The backtracking algorithm starts from node 0 and tries to extend the current path one node at a time. If it hits a dead end, it <em style="color:var(--neon-red);font-style:normal">backtracks</em> and tries a different neighbor. This continues until either a complete Hamiltonian path is found, or all possibilities are exhausted.
+        The backtracking algorithm starts at node 0 and extends the current path one vertex at a time. When it hits a dead end it <em style="color:var(--neon-red);font-style:normal">backtracks</em> and tries a different neighbor — repeating until a complete Hamiltonian path is found or all possibilities are exhausted.
       </div>
     </div>
   </div>
 </div>
 
-<!-- ========== LEARN PAGE ========== -->
+<!-- ===== LEARN ===== -->
 <div class="page" id="page-learn">
   <div class="learn-layout">
     <div class="learn-hero">
       <h1>Understanding Hamiltonian Paths</h1>
-      <p>A visual, interactive guide to one of graph theory's most fascinating problems — from basics to real-world applications.</p>
+      <p>A visual, interactive guide to one of graph theory's most fascinating and computationally hard problems.</p>
     </div>
-
     <div class="concept-grid">
       <div class="learn-card">
         <h2 style="color:var(--neon-blue)">⬡ HAMILTONIAN PATH</h2>
-        <p>A <strong style="color:var(--neon-cyan)">Hamiltonian Path</strong> is a path in a graph that visits every vertex <em style="color:var(--neon-amber);font-style:normal">exactly once</em>. It doesn't need to return to the starting point.</p>
-        <p>Named after Sir William Rowan Hamilton who invented a puzzle involving finding such paths on an icosahedron in 1857.</p>
+        <p>A <strong style="color:var(--neon-cyan)">Hamiltonian Path</strong> visits every vertex <em style="color:var(--neon-amber);font-style:normal">exactly once</em>. It doesn't need to return to the starting point.</p>
+        <p>Named after Sir William Rowan Hamilton who invented a puzzle on an icosahedron in 1857.</p>
         <div class="mini-graph-wrap"><canvas id="learn-canvas-1"></canvas></div>
-        <div style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);text-align:center;font-family:var(--font-mono)">A → B → C → D → E (visits all nodes once)</div>
+        <div style="margin-top:0.5rem;font-size:0.72rem;color:var(--text-muted);text-align:center;font-family:var(--font-mono)">A → B → C → D → E (visits all once)</div>
       </div>
       <div class="learn-card">
         <h2 style="color:var(--neon-purple)">◎ HAMILTONIAN CIRCUIT</h2>
-        <p>A <strong style="color:var(--neon-purple)">Hamiltonian Circuit</strong> (or cycle) is a Hamiltonian path that also returns to the starting vertex, forming a closed loop.</p>
-        <p>Every complete graph K<sub>n</sub> where n ≥ 3 has a Hamiltonian circuit. Finding one is the basis of the famous Travelling Salesman Problem.</p>
+        <p>A <strong style="color:var(--neon-purple)">Hamiltonian Circuit</strong> is a Hamiltonian path that returns to its starting vertex, forming a closed loop.</p>
+        <p>Every complete graph Kₙ (n ≥ 3) has one. It's the foundation of the Travelling Salesman Problem.</p>
         <div class="mini-graph-wrap"><canvas id="learn-canvas-2"></canvas></div>
-        <div style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);text-align:center;font-family:var(--font-mono)">A → B → C → D → E → A (returns to start)</div>
+        <div style="margin-top:0.5rem;font-size:0.72rem;color:var(--text-muted);text-align:center;font-family:var(--font-mono)">A → B → C → D → E → A</div>
       </div>
     </div>
-
     <div class="theorem-box">
       <h3>ORE'S THEOREM (1960)</h3>
-      <p>If for every pair of non-adjacent vertices <em>u</em> and <em>v</em> in a graph <em>G</em> with <em>n</em> vertices, the condition <em>deg(u) + deg(v) ≥ n</em> holds, then <em>G</em> has a Hamiltonian circuit. This is a <em>sufficient</em> (not necessary) condition.</p>
+      <p>If for every pair of non-adjacent vertices <em>u</em> and <em>v</em> with <em>n</em> vertices, <em>deg(u) + deg(v) ≥ n</em>, then <em>G</em> has a Hamiltonian circuit. This is a <em>sufficient</em> (not necessary) condition.</p>
     </div>
-
     <div class="info-strip">
-      <div class="info-tile">
-        <h3>REAL-WORLD USES</h3>
-        <p>Logistics routing, DNA sequencing (genome assembly), circuit board drilling, knight's tour on chess, scheduling problems.</p>
-      </div>
-      <div class="info-tile">
-        <h3>WHY NO SOLUTION?</h3>
-        <p>A graph with a "bridge" vertex of degree 1 cannot have a circuit. Disconnected graphs have no path. Odd-degree nodes in Eulerian terms differ from Hamiltonian constraints.</p>
-      </div>
-      <div class="info-tile">
-        <h3>vs EULER PATH</h3>
-        <p>Euler paths visit every <em style="color:var(--neon-cyan);font-style:normal">edge</em> once. Hamiltonian paths visit every <em style="color:var(--neon-purple);font-style:normal">vertex</em> once. Very different problems with very different algorithms!</p>
-      </div>
-      <div class="info-tile">
-        <h3>COMPLEXITY</h3>
-        <p>No polynomial-time algorithm is known. It's NP-complete. For n nodes, brute force checks n! paths. Even heuristics like dynamic programming run in O(2ⁿ·n²).</p>
-      </div>
+      <div class="info-tile"><h3>REAL-WORLD USES</h3><p>Logistics routing, DNA sequencing, circuit board drilling, knight's tour on chess, scheduling, genome assembly.</p></div>
+      <div class="info-tile"><h3>WHY NO SOLUTION?</h3><p>A vertex of degree 1 blocks circuits. Disconnected graphs have no path. Odd-degree vertex neighborhoods can create dead ends.</p></div>
+      <div class="info-tile"><h3>vs EULER PATH</h3><p>Euler paths visit every <em style="color:var(--neon-cyan);font-style:normal">edge</em> once. Hamiltonian paths visit every <em style="color:var(--neon-purple);font-style:normal">vertex</em> once. Very different algorithms!</p></div>
+      <div class="info-tile"><h3>NP-COMPLEXITY</h3><p>No polynomial algorithm exists. Brute force is O(n!). Best exact: Held-Karp DP at O(2ⁿ·n²). Heuristics exist for approximations.</p></div>
     </div>
     <div style="text-align:center;padding:2rem">
-      <button class="btn-primary" onclick="showPage('builder')">Try the Graph Builder →</button>
+      <button class="btn-primary" onclick="showPage('ai')">Try the AI Solver →</button>
     </div>
   </div>
 </div>
 
 <script>
 // =====================================================
-// CORE UTILS
+// ROUTING
 // =====================================================
-let currentPage = 'home';
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+let currentPage='home';
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelector(`[data-page="${name}"]`).classList.add('active');
-  currentPage = name;
+  currentPage=name;
   if(name==='home') initHeroCanvas();
   if(name==='builder') initBuilder();
   if(name==='game') initGame();
@@ -706,1000 +741,672 @@ function showPage(name) {
   if(name==='learn') initLearn();
 }
 
-function showToast(msg,type='info') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast toast-${type} show`;
-  setTimeout(()=>t.classList.remove('show'), 3000);
+function showToast(msg,type='info'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast toast-${type} show`;
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
 // =====================================================
-// HOME CANVAS — animated floating graph
+// HOME HERO CANVAS
 // =====================================================
-let heroNodes = [], heroEdges = [];
-let heroAnimId;
-function initHeroCanvas() {
-  const canvas = document.getElementById('hero-canvas');
-  const ctx = canvas.getContext('2d');
-  function resize() {
-    canvas.width = canvas.offsetWidth * devicePixelRatio;
-    canvas.height = canvas.offsetHeight * devicePixelRatio;
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  heroNodes = Array.from({length:22}, ()=>({
-    x: Math.random()*canvas.offsetWidth,
-    y: Math.random()*canvas.offsetHeight,
-    vx:(Math.random()-0.5)*0.4,
-    vy:(Math.random()-0.5)*0.4,
-    r: Math.random()*4+3,
-    glow: Math.random()*Math.PI*2,
-    color: ['#4f8eff','#00e5ff','#a259ff'][Math.floor(Math.random()*3)]
-  }));
-
-  function frame() {
-    const W=canvas.offsetWidth, H=canvas.offsetHeight;
-    ctx.clearRect(0,0,W,H);
-    heroNodes.forEach(n=>{
-      n.x+=n.vx; n.y+=n.vy;
-      if(n.x<0||n.x>W) n.vx*=-1;
-      if(n.y<0||n.y>H) n.vy*=-1;
-      n.glow+=0.02;
-    });
-    heroNodes.forEach((a,i)=>{
-      heroNodes.forEach((b,j)=>{
-        if(i>=j) return;
-        const d=Math.hypot(a.x-b.x,a.y-b.y);
-        if(d<160){
-          const alpha=(1-d/160)*0.5;
-          ctx.beginPath();
-          ctx.strokeStyle=`rgba(79,142,255,${alpha})`;
-          ctx.lineWidth=0.8;
-          ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
-        }
-      });
-    });
-    heroNodes.forEach(n=>{
-      const g=Math.sin(n.glow)*0.4+0.6;
-      ctx.beginPath();
-      ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
-      ctx.fillStyle=n.color;
-      ctx.globalAlpha=g;ctx.fill();ctx.globalAlpha=1;
-      ctx.beginPath();ctx.arc(n.x,n.y,n.r*2.5,0,Math.PI*2);
-      ctx.fillStyle=n.color.replace(')',',0.12)').replace('rgb','rgba');
-      ctx.fill();
-    });
-    heroAnimId=requestAnimationFrame(frame);
-  }
-  if(heroAnimId) cancelAnimationFrame(heroAnimId);
-  frame();
-}
-
-// =====================================================
-// GRAPH BUILDER
-// =====================================================
-let gbNodes=[], gbEdges=[], gbMode='node', gbAnimId;
-let gbDragging=null, gbEdgeStart=null;
-let gbPath=[], gbPathAnimStep=0, gbAnimating=false, gbIsSolving=false;
-
-function initBuilder() {
-  const canvas = document.getElementById('graph-canvas');
-  const ctx = canvas.getContext('2d');
-  function resize() {
-    canvas.width = canvas.offsetWidth * devicePixelRatio;
-    canvas.height = canvas.offsetHeight * devicePixelRatio;
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-  }
-  resize();
-  window.removeEventListener('resize', resize);
-  window.addEventListener('resize', resize);
-
-  canvas.onclick = e => handleBuilderClick(e, canvas, ctx);
-  canvas.onmousedown = e => handleBuilderDown(e, canvas);
-  canvas.onmousemove = e => handleBuilderMove(e, canvas, ctx);
-  canvas.onmouseup = e => handleBuilderUp(e, canvas, ctx);
-
-  if(gbAnimId) cancelAnimationFrame(gbAnimId);
-  if(gbNodes.length===0) generateRandom();
-  renderBuilder(ctx, canvas);
-}
-
-function getCanvasPos(e, canvas) {
-  const r = canvas.getBoundingClientRect();
-  return {x:e.clientX-r.left, y:e.clientY-r.top};
-}
-
-function hitNode(pos) {
-  return gbNodes.find(n=>Math.hypot(n.x-pos.x,n.y-pos.y)<22);
-}
-
-let mousePos = {x:0,y:0};
-function handleBuilderClick(e, canvas, ctx) {
-  if(gbAnimating||gbIsSolving) return;
-  const pos = getCanvasPos(e, canvas);
-  if(gbMode==='node') {
-    if(hitNode(pos)) return;
-    gbNodes.push({x:pos.x, y:pos.y, id:gbNodes.length, glow:0, visited:false, current:false});
-    updateProgressDots();
-  }
-}
-function handleBuilderDown(e, canvas) {
-  const pos = getCanvasPos(e, canvas);
-  if(gbMode==='node') {
-    gbDragging = hitNode(pos);
-  } else {
-    gbEdgeStart = hitNode(pos);
-  }
-}
-function handleBuilderMove(e, canvas, ctx) {
-  mousePos = getCanvasPos(e, canvas);
-  if(gbDragging) {
-    gbDragging.x = mousePos.x;
-    gbDragging.y = mousePos.y;
-  }
-}
-function handleBuilderUp(e, canvas, ctx) {
-  const pos = getCanvasPos(e, canvas);
-  if(gbMode==='edge' && gbEdgeStart) {
-    const end = hitNode(pos);
-    if(end && end!==gbEdgeStart) {
-      const exists = gbEdges.some(e=>(e.a===gbEdgeStart&&e.b===end)||(e.a===end&&e.b===gbEdgeStart));
-      if(!exists) gbEdges.push({a:gbEdgeStart, b:end, highlighted:false, faded:false});
-    }
-  }
-  gbDragging = null;
-  gbEdgeStart = null;
-}
-
-function setMode(m) {
-  gbMode = m;
-  document.getElementById('mode-label').textContent = m==='node'?'Add Node':'Add Edge';
-  document.getElementById('btn-mode-node').classList.toggle('ctrl-btn-active',m==='node');
-  document.getElementById('btn-mode-edge').classList.toggle('ctrl-btn-active',m==='edge');
-  document.getElementById('graph-canvas').style.cursor = m==='node'?'crosshair':'pointer';
-}
-
-function generateRandom() {
-  gbNodes=[];gbEdges=[];gbPath=[];gbAnimating=false;gbIsSolving=false;
-  const canvas = document.getElementById('graph-canvas');
-  if(!canvas.offsetWidth) {setTimeout(generateRandom,200);return;}
-  const W=canvas.offsetWidth, H=canvas.offsetHeight;
-  const n = 7;
-  for(let i=0;i<n;i++) {
-    const angle = (i/n)*Math.PI*2;
-    const rx=(W/2-80), ry=(H/2-80);
-    gbNodes.push({
-      x: W/2+rx*Math.cos(angle)*0.8+(Math.random()-0.5)*60,
-      y: H/2+ry*Math.sin(angle)*0.8+(Math.random()-0.5)*60,
-      id:i, glow:0, visited:false, current:false
-    });
-  }
-  const density = 0.55;
-  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) {
-    if(Math.random()<density) gbEdges.push({a:gbNodes[i],b:gbNodes[j],highlighted:false,faded:false});
-  }
-  updateProgressDots();
-  addLog('Generated random graph with '+n+' nodes.','info');
-  setStatus('idle');
-}
-
-function resetGraph() {
-  gbNodes=[];gbEdges=[];gbPath=[];gbAnimating=false;gbIsSolving=false;
-  updateProgressDots();
-  document.getElementById('step-log').innerHTML='<span class="step-info">Graph reset. Add nodes by clicking.</span>';
-  setStatus('idle');
-}
-
-function setStatus(s) {
-  const el=document.getElementById('algo-status');
-  el.className='status-badge';
-  const map={idle:'READY',found:'PATH FOUND',none:'NO PATH EXISTS',running:'SOLVING...'};
-  const cls={idle:'status-idle',found:'status-found',none:'status-none',running:'status-running'};
-  el.classList.add(cls[s]);
-  el.textContent=map[s];
-}
-
-function addLog(msg, type='info') {
-  const el=document.getElementById('step-log');
-  const div=document.createElement('div');
-  div.className=`step-line step-${type}`;
-  div.textContent = msg;
-  el.appendChild(div);
-  el.scrollTop=el.scrollHeight;
-}
-
-function updateProgressDots() {
-  const el=document.getElementById('progress-dots');
-  el.innerHTML='';
-  gbNodes.forEach((n,i)=>{
-    const d=document.createElement('div');
-    d.className='dot'+(gbPath.includes(n)?' done':'');
-    el.appendChild(d);
-  });
-}
-
-// Hamiltonian path algorithm (backtracking)
-function findPath(circuit=false) {
-  if(gbNodes.length<2){showToast('Add at least 2 nodes first','error');return;}
-  gbIsSolving=true;gbAnimating=false;
-  gbNodes.forEach(n=>{n.visited=false;n.current=false;n.glow=0});
-  gbEdges.forEach(e=>{e.highlighted=false;e.faded=false});
-  gbPath=[];
-  setStatus('running');
-  document.getElementById('step-log').innerHTML='';
-  addLog('Starting backtracking algorithm...','info');
-  addLog(`Looking for: ${circuit?'Hamiltonian Circuit':'Hamiltonian Path'}`,'info');
-
-  setTimeout(()=>{
-    const adj = buildAdj();
-    const steps=[];
-    const found = solve(0,[gbNodes[0]],adj,circuit,steps,gbNodes.length);
-    gbIsSolving=false;
-    if(found) {
-      setStatus('found');
-      showToast(circuit?'Circuit found! ✓':'Path found! ✓','success');
-      animatePath(steps);
-    } else {
-      setStatus('none');
-      showToast('No Hamiltonian '+(circuit?'circuit':'path')+' exists','error');
-      addLog('No solution exists for this graph.','err');
-      gbNodes.forEach(n=>{n.visited=false;n.current=false});
-      gbEdges.forEach(e=>{e.faded=true;e.highlighted=false});
-    }
-  },100);
-}
-
-function buildAdj() {
-  const adj = {};
-  gbNodes.forEach(n=>adj[n.id]=[]);
-  gbEdges.forEach(e=>{
-    adj[e.a.id].push(e.b.id);
-    adj[e.b.id].push(e.a.id);
-  });
-  return adj;
-}
-
-function solve(start, path, adj, circuit, steps, total) {
-  if(path.length===total) {
-    if(!circuit) {steps.push({type:'found',path:[...path]});return true;}
-    const hasReturn = adj[path[path.length-1].id].includes(path[0].id);
-    if(hasReturn) {steps.push({type:'found',path:[...path]});return true;}
-    return false;
-  }
-  const curr=path[path.length-1];
-  for(const nid of adj[curr.id]) {
-    const nb=gbNodes.find(n=>n.id===nid);
-    if(path.includes(nb)) {steps.push({type:'skip',from:curr.id,to:nid});continue;}
-    steps.push({type:'try',from:curr.id,to:nid,pathLen:path.length+1});
-    path.push(nb);
-    if(solve(nid,path,adj,circuit,steps,total)) return true;
-    steps.push({type:'back',from:curr.id,to:nid});
-    path.pop();
-  }
-  return false;
-}
-
-function animatePath(steps) {
-  gbAnimating=true;
-  let i=0;
-  gbNodes.forEach(n=>{n.visited=false;n.current=false;n.glow=0});
-  function next() {
-    if(i>=steps.length){gbAnimating=false;return;}
-    const s=steps[i++];
-    if(s.type==='try'){
-      addLog(`Trying: ${s.from} → ${s.to} (depth ${s.pathLen})`, 'try');
-      const n=gbNodes.find(x=>x.id===s.to);
-      if(n){n.current=true;setTimeout(()=>{n.current=false;n.visited=true;n.glow=1;},200)}
-    } else if(s.type==='back') {
-      addLog(`Backtrack from ${s.to}`, 'err');
-      const n=gbNodes.find(x=>x.id===s.to);
-      if(n){n.visited=false;n.glow=0;}
-    } else if(s.type==='found') {
-      gbPath=s.path;
-      gbPath.forEach(n=>{n.visited=true;n.glow=1;});
-      addLog(`✓ Solution found! Path: ${s.path.map(n=>n.id).join(' → ')}`, 'ok');
-      for(let j=0;j<gbPath.length-1;j++){
-        const e=gbEdges.find(e=>(e.a===gbPath[j]&&e.b===gbPath[j+1])||(e.a===gbPath[j+1]&&e.b===gbPath[j]));
-        if(e) e.highlighted=true;
-      }
-      updateProgressDots();
-      gbAnimating=false;return;
-    }
-    const delay = s.type==='try'?80:40;
-    setTimeout(next, delay);
-  }
-  next();
-}
-
-function renderBuilder(ctx, canvas) {
-  function frame() {
-    const W=canvas.offsetWidth, H=canvas.offsetHeight;
-    ctx.clearRect(0,0,W,H);
-
-    // Dot grid
-    ctx.fillStyle='rgba(99,120,255,0.06)';
-    for(let x=20;x<W;x+=30)for(let y=20;y<H;y+=30)
-      {ctx.beginPath();ctx.arc(x,y,1.2,0,Math.PI*2);ctx.fill();}
-
-    // Edges
-    gbEdges.forEach(e=>{
-      const alpha = e.faded?0.06:1;
-      ctx.beginPath();
-      ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
-      if(e.highlighted){
-        ctx.strokeStyle=`rgba(0,255,136,${alpha})`;ctx.lineWidth=3;
-        ctx.shadowColor='#00ff88';ctx.shadowBlur=12;
-      } else {
-        ctx.strokeStyle=`rgba(99,120,255,${alpha*0.5})`;ctx.lineWidth=1.5;
-        ctx.shadowBlur=0;
-      }
-      ctx.stroke();ctx.shadowBlur=0;
-    });
-
-    // Edge-mode preview
-    if(gbEdgeStart && gbMode==='edge') {
-      ctx.beginPath();ctx.moveTo(gbEdgeStart.x,gbEdgeStart.y);ctx.lineTo(mousePos.x,mousePos.y);
-      ctx.strokeStyle='rgba(0,229,255,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);
-    }
-
-    // Nodes
-    gbNodes.forEach(n=>{
-      n.glow = Math.min(1, n.glow+0.05);
-      const isPath=gbPath.includes(n);
-      let color=n.visited?'#00ff88':(n.current?'#ffaa00':'#4f8eff');
-      if(isPath&&!n.visited) color='#00ff88';
-
-      // Glow
-      if(n.visited||n.current){
-        ctx.beginPath();ctx.arc(n.x,n.y,26,0,Math.PI*2);
-        ctx.fillStyle=(n.current?'rgba(255,170,0,0.12)':'rgba(0,255,136,0.1)');ctx.fill();
-      }
-      // Node
-      ctx.beginPath();ctx.arc(n.x,n.y,18,0,Math.PI*2);
-      ctx.fillStyle='#0d1225';ctx.fill();
-      ctx.strokeStyle=color;ctx.lineWidth=2;
-      if(n.visited||n.current){ctx.shadowColor=color;ctx.shadowBlur=16;}
-      ctx.stroke();ctx.shadowBlur=0;
-      // Label
-      ctx.fillStyle=color;ctx.font='bold 12px JetBrains Mono,monospace';
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(n.id,n.x,n.y);
-    });
-
-    gbAnimId=requestAnimationFrame(frame);
-  }
-  if(gbAnimId) cancelAnimationFrame(gbAnimId);
-  frame();
-}
-
-// =====================================================
-// GAME MODE
-// =====================================================
-let gameNodes=[], gameEdges=[], gameUserPath=[], gameSolution=[];
-let gameScore=0, gameTimer=60, gameTimerInterval=null, gameDifficulty='easy', gameStarted=false;
-let gameAnimId;
-
-function initGame() {
-  const canvas = document.getElementById('game-canvas');
-  const ctx = canvas.getContext('2d');
-  function resize() {
-    canvas.width = canvas.offsetWidth * devicePixelRatio;
-    canvas.height = canvas.offsetHeight * devicePixelRatio;
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-  canvas.onclick = e => handleGameClick(e, canvas);
-  if(gameAnimId) cancelAnimationFrame(gameAnimId);
-  if(gameNodes.length===0) startGame();
-  renderGame(ctx, canvas);
-}
-
-const DIFF_CONFIG = {easy:{nodes:5,time:90},medium:{nodes:7,time:60},hard:{nodes:9,time:45}};
-
-function startGame() {
-  if(gameTimerInterval) clearInterval(gameTimerInterval);
-  const cfg=DIFF_CONFIG[gameDifficulty];
-  gameNodes=[];gameEdges=[];gameUserPath=[];gameSolution=[];gameStarted=false;
-
-  const canvas=document.getElementById('game-canvas');
-  if(!canvas.offsetWidth){setTimeout(startGame,200);return;}
-  const W=canvas.offsetWidth,H=canvas.offsetHeight;
-  const n=cfg.nodes;
-  for(let i=0;i<n;i++){
-    const angle=(i/n)*Math.PI*2;
-    gameNodes.push({
-      x:W/2+(W/2-70)*Math.cos(angle)*0.75+(Math.random()-0.5)*40,
-      y:H/2+(H/2-70)*Math.sin(angle)*0.75+(Math.random()-0.5)*40,
-      id:i,selected:false,error:false,errorAnim:0
-    });
-  }
-  // Generate a graph that definitely has a Hamiltonian path
-  const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
-  for(let i=0;i<n-1;i++) {
-    gameEdges.push({a:gameNodes[perm[i]],b:gameNodes[perm[i+1]]});
-  }
-  // Add random extra edges
-  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) {
-    if(Math.random()<0.3&&!gameEdges.some(e=>(e.a===gameNodes[i]&&e.b===gameNodes[j])||(e.a===gameNodes[j]&&e.b===gameNodes[i])))
-      gameEdges.push({a:gameNodes[i],b:gameNodes[j]});
-  }
-  gameSolution=perm.map(i=>gameNodes[i]);
-
-  gameTimer=cfg.time;
-  document.getElementById('game-timer').textContent=gameTimer+'s';
-  document.getElementById('game-path-display').textContent='—';
-  document.getElementById('game-score').textContent=gameScore;
-  gameStarted=true;
-
-  gameTimerInterval=setInterval(()=>{
-    gameTimer--;
-    document.getElementById('game-timer').textContent=gameTimer+'s';
-    if(gameTimer<=0){
-      clearInterval(gameTimerInterval);
-      showGameMsg('TIME UP! ⏱','error');
-      gameStarted=false;
-    }
-  },1000);
-}
-
-function setDifficulty(d) {
-  gameDifficulty=d;
-  document.querySelectorAll('.diff-pill').forEach(p=>p.className='diff-pill');
-  const pill=[...document.querySelectorAll('.diff-pill')].find(p=>p.textContent.toLowerCase()===d);
-  if(pill) pill.classList.add(`active-${d==='medium'?'med':d}`);
-  startGame();
-}
-
-function handleGameClick(e, canvas) {
-  if(!gameStarted) return;
-  const r=canvas.getBoundingClientRect();
-  const pos={x:e.clientX-r.left,y:e.clientY-r.top};
-  const node=gameNodes.find(n=>Math.hypot(n.x-pos.x,n.y-pos.y)<24);
-  if(!node) return;
-
-  if(gameUserPath.includes(node)) {
-    node.error=true;node.errorAnim=1;
-    setTimeout(()=>{node.error=false;},800);
-    showGameMsg('Already visited! ✗','error');
-    return;
-  }
-  if(gameUserPath.length>0) {
-    const prev=gameUserPath[gameUserPath.length-1];
-    const connected=gameEdges.some(e=>(e.a===prev&&e.b===node)||(e.a===node&&e.b===prev));
-    if(!connected) {
-      node.error=true;node.errorAnim=1;
-      setTimeout(()=>{node.error=false;},800);
-      showGameMsg('Not connected! ✗','error');
-      return;
-    }
-  }
-  gameUserPath.push(node);
-  node.selected=true;
-  document.getElementById('game-path-display').textContent=gameUserPath.map(n=>n.id).join(' → ');
-
-  if(gameUserPath.length===gameNodes.length) {
-    clearInterval(gameTimerInterval);
-    const bonus=gameTimer*10;
-    const pts = 500+bonus;
-    gameScore+=pts;
-    document.getElementById('game-score').textContent=gameScore;
-    document.getElementById('player-score').textContent=gameScore;
-    document.getElementById('player-row').style.display='flex';
-    showGameMsg('HAMILTONIAN PATH! 🎉','win');
-    gameStarted=false;
-    showToast(`+${pts} points! Brilliant!`,'success');
-  }
-}
-
-function resetGamePath() {
-  gameUserPath=[];
-  gameNodes.forEach(n=>{n.selected=false;n.error=false;});
-  document.getElementById('game-path-display').textContent='—';
-}
-
-function showGameMsg(msg,type) {
-  const el=document.getElementById('game-msg');
-  el.textContent=msg;el.className=`game-msg ${type}`;
-  el.style.display='block';
-  el.style.animation='none';
-  requestAnimationFrame(()=>{el.style.animation='fade-msg 2s forwards';});
-  setTimeout(()=>{el.style.display='none';},2100);
-}
-
-function renderGame(ctx, canvas) {
-  function frame() {
-    const W=canvas.offsetWidth,H=canvas.offsetHeight;
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='rgba(79,142,255,0.04)';
-    for(let x=20;x<W;x+=30) for(let y=20;y<H;y+=30)
-      {ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
-
-    gameEdges.forEach(e=>{
-      const inPath=gameUserPath.length>0&&(()=>{
-        for(let i=0;i<gameUserPath.length-1;i++) {
-          const a=gameUserPath[i],b=gameUserPath[i+1];
-          if((e.a===a&&e.b===b)||(e.a===b&&e.b===a)) return true;
-        }
-        return false;
-      })();
-      ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
-      if(inPath){ctx.strokeStyle='#00e5ff';ctx.lineWidth=2.5;ctx.shadowColor='#00e5ff';ctx.shadowBlur=10;}
-      else{ctx.strokeStyle='rgba(99,120,255,0.35)';ctx.lineWidth=1.5;ctx.shadowBlur=0;}
-      ctx.stroke();ctx.shadowBlur=0;
-    });
-
-    gameNodes.forEach(n=>{
-      if(n.errorAnim>0) n.errorAnim=Math.max(0,n.errorAnim-0.05);
-      const idx=gameUserPath.indexOf(n);
-      let color='#4f8eff';
-      if(n.selected) color='#00ff88';
-      if(n.error) color=`rgba(255,${Math.floor(51+n.errorAnim*100)},102,1)`;
-
-      if(n.selected) {ctx.beginPath();ctx.arc(n.x,n.y,28,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,0.1)';ctx.fill();}
-      if(n.error) {
-        ctx.save();
-        const shake=n.errorAnim*4;
-        ctx.translate(Math.sin(Date.now()*0.05)*shake,0);
-      }
-      ctx.beginPath();ctx.arc(n.x,n.y,20,0,Math.PI*2);
-      ctx.fillStyle='#0d1225';ctx.fill();
-      ctx.strokeStyle=color;ctx.lineWidth=2;
-      if(n.selected||n.error){ctx.shadowColor=color;ctx.shadowBlur=14;}
-      ctx.stroke();ctx.shadowBlur=0;
-      if(n.error) ctx.restore();
-
-      if(idx>=0) {
-        ctx.fillStyle=color;ctx.font='bold 11px JetBrains Mono,monospace';
-        ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.fillText(idx+1,n.x,n.y);
-      } else {
-        ctx.fillStyle=color;ctx.font='bold 12px JetBrains Mono,monospace';
-        ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.fillText(n.id,n.x,n.y);
-      }
-    });
-
-    gameAnimId=requestAnimationFrame(frame);
-  }
-  if(gameAnimId) cancelAnimationFrame(gameAnimId);
-  frame();
-}
-
-// =====================================================
-// SIMULATION
-// =====================================================
-let simNodes=[], simEdges=[], simPath=[], simTruck={x:0,y:0,target:0,progress:0};
-let simRunning=false, simAnimId, simStep=0, simSpeed=1;
-let simDistTotal=0, simHousesVisited=0, simElapsed=0, simStartTime=0;
-
-const HOUSE_ICONS = ['🏠','🏡','🏢','🏪','🏨','🏦','🏗','🏭','🏩','🏬'];
-
-function initSim() {
-  const canvas = document.getElementById('sim-canvas');
-  const ctx = canvas.getContext('2d');
-  function resize() {
-    canvas.width = canvas.offsetWidth * devicePixelRatio;
-    canvas.height = canvas.offsetHeight * devicePixelRatio;
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-  if(simNodes.length===0) buildSimGraph(canvas);
-  if(simAnimId) cancelAnimationFrame(simAnimId);
-  renderSim(ctx, canvas);
-}
-
-function buildSimGraph(canvas) {
-  if(!canvas.offsetWidth){setTimeout(()=>buildSimGraph(canvas),200);return;}
-  const W=canvas.offsetWidth, H=canvas.offsetHeight;
-  simNodes=[];simEdges=[];simPath=[];simStep=0;
-  simTruck={x:0,y:0,target:0,progress:0};
-  simDistTotal=0;simHousesVisited=0;simElapsed=0;
-
-  const n=10;
-  for(let i=0;i<n;i++){
-    simNodes.push({
-      x:80+Math.random()*(W-160),
-      y:60+Math.random()*(H-120),
-      id:i,icon:HOUSE_ICONS[i],visited:false,
-      label:'House '+(i+1)
-    });
-  }
-  // Build a guaranteed Hamiltonian path
-  const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
-  for(let i=0;i<n-1;i++) simEdges.push({a:simNodes[perm[i]],b:simNodes[perm[i+1]]});
-  // Extra roads
-  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) {
-    if(Math.random()<0.25&&!simEdges.some(e=>(e.a===simNodes[i]&&e.b===simNodes[j])||(e.a===simNodes[j]&&e.b===simNodes[i])))
-      simEdges.push({a:simNodes[i],b:simNodes[j]});
-  }
-  simPath=perm.map(i=>simNodes[i]);
-  simTruck.x=simPath[0].x; simTruck.y=simPath[0].y;
-  updateSimMetrics();
-}
-
-function updateSimMetrics() {
-  document.getElementById('met-dist').textContent=simDistTotal.toFixed(1)+' km';
-  document.getElementById('met-eff').textContent=simRunning||simHousesVisited>0?Math.round((simHousesVisited/simNodes.length)*100)+'%':'—';
-  document.getElementById('met-houses').textContent=simHousesVisited+'/'+simNodes.length;
-  document.getElementById('met-time').textContent=simElapsed.toFixed(1)+'s';
-}
-
-function startSimulation() {
-  if(simPath.length===0) return;
-  simRunning=true;simStep=0;
-  simDistTotal=0;simHousesVisited=0;simElapsed=0;simStartTime=Date.now();
-  simNodes.forEach(n=>n.visited=false);
-  simPath[0].visited=true;simHousesVisited=1;
-  simTruck.x=simPath[0].x;simTruck.y=simPath[0].y;
-  simTruck.target=1;simTruck.progress=0;
-  updateSimMetrics();
-}
-
-function resetSim() {
-  simRunning=false;
-  const canvas=document.getElementById('sim-canvas');
-  buildSimGraph(canvas);
-}
-
-function setSpeeed(s) {simSpeed=s;}
-
-function compareRoutes() {
-  showToast('Showing optimal vs random comparison','info');
-}
-
-function renderSim(ctx, canvas) {
-  function frame() {
-    const W=canvas.offsetWidth, H=canvas.offsetHeight;
-    ctx.clearRect(0,0,W,H);
-
-    // Grid background
-    ctx.strokeStyle='rgba(79,142,255,0.05)';ctx.lineWidth=1;
-    for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-    for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-
-    // Roads
-    simEdges.forEach(e=>{
-      const inPath=(()=>{
-        for(let i=0;i<simStep&&i<simPath.length-1;i++) {
-          if((simPath[i]===e.a&&simPath[i+1]===e.b)||(simPath[i]===e.b&&simPath[i+1]===e.a)) return true;
-        }
-        return false;
-      })();
-      ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
-      ctx.strokeStyle=inPath?'rgba(0,229,255,0.6)':'rgba(99,120,255,0.2)';
-      ctx.lineWidth=inPath?2.5:1.5;
-      if(inPath){ctx.shadowColor='#00e5ff';ctx.shadowBlur=8;}
-      ctx.stroke();ctx.shadowBlur=0;
-    });
-
-    // Houses
-    simNodes.forEach(n=>{
-      const glow = n.visited?1:0;
-      if(n.visited){
-        ctx.beginPath();ctx.arc(n.x,n.y,28,0,Math.PI*2);
-        ctx.fillStyle='rgba(0,255,136,0.12)';ctx.fill();
-      }
-      ctx.beginPath();ctx.arc(n.x,n.y,20,0,Math.PI*2);
-      ctx.fillStyle='#0d1225';ctx.fill();
-      ctx.strokeStyle=n.visited?'#00ff88':'rgba(99,120,255,0.5)';
-      ctx.lineWidth=2;
-      if(n.visited){ctx.shadowColor='#00ff88';ctx.shadowBlur=12;}
-      ctx.stroke();ctx.shadowBlur=0;
-
-      ctx.font='14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(n.icon,n.x,n.y);
-      ctx.fillStyle=n.visited?'#00ff88':'#8899cc';
-      ctx.font='9px Inter,sans-serif';ctx.fillText(n.label,n.x,n.y+30);
-    });
-
-    // Truck animation
-    if(simRunning && simStep<simPath.length-1) {
-      simTruck.progress+=0.015*simSpeed;
-      if(simTruck.progress>=1) {
-        simTruck.progress=0;
-        simStep++;
-        if(simStep<simPath.length){
-          const from=simPath[simStep-1], to=simPath[simStep];
-          simDistTotal+=Math.hypot(to.x-from.x,to.y-from.y)*0.05;
-          simPath[simStep].visited=true;simHousesVisited++;
-        }
-        if(simStep>=simPath.length-1){simRunning=false;showToast('Delivery complete! All houses visited ✓','success');}
-      }
-      simElapsed=(Date.now()-simStartTime)/1000;
-      updateSimMetrics();
-    }
-    if(simStep<simPath.length-1){
-      const from=simPath[simStep], to=simPath[simStep+1];
-      simTruck.x=from.x+(to.x-from.x)*simTruck.progress;
-      simTruck.y=from.y+(to.y-from.y)*simTruck.progress;
-    }
-    // Draw truck
-    const tx=simTruck.x, ty=simTruck.y;
-    ctx.beginPath();ctx.arc(tx,ty,14,0,Math.PI*2);
-    ctx.fillStyle='rgba(255,170,0,0.15)';ctx.fill();
-    ctx.beginPath();ctx.arc(tx,ty,10,0,Math.PI*2);
-    ctx.fillStyle='#0d1225';ctx.fill();
-    ctx.strokeStyle='#ffaa00';ctx.lineWidth=2;
-    ctx.shadowColor='#ffaa00';ctx.shadowBlur=12;ctx.stroke();ctx.shadowBlur=0;
-    ctx.font='10px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('🚚',tx,ty);
-
-    simAnimId=requestAnimationFrame(frame);
-  }
-  if(simAnimId) cancelAnimationFrame(simAnimId);
-  frame();
-}
-
-// =====================================================
-// AI SOLVER
-// =====================================================
-let aiNodes=[], aiEdges=[], aiPath=[], aiDeadEnds=[];
-let aiAnimId, aiSolving=false, aiStepDelay=120;
-
-function initAi() {
-  const canvas=document.getElementById('ai-canvas');
+let heroNodes=[],heroAnimId;
+function initHeroCanvas(){
+  const canvas=document.getElementById('hero-canvas');
   const ctx=canvas.getContext('2d');
   function resize(){
     canvas.width=canvas.offsetWidth*devicePixelRatio;
     canvas.height=canvas.offsetHeight*devicePixelRatio;
     ctx.scale(devicePixelRatio,devicePixelRatio);
   }
-  resize();
-  window.addEventListener('resize',resize);
-  if(aiNodes.length===0) genAiGraph();
-  if(aiAnimId) cancelAnimationFrame(aiAnimId);
-  renderAi(ctx,canvas);
+  resize();window.addEventListener('resize',resize);
+  heroNodes=Array.from({length:26},()=>({
+    x:Math.random()*canvas.offsetWidth,y:Math.random()*canvas.offsetHeight,
+    vx:(Math.random()-0.5)*0.38,vy:(Math.random()-0.5)*0.38,
+    r:Math.random()*3.5+2.5,glow:Math.random()*Math.PI*2,
+    color:['#4f8eff','#00e5ff','#b06aff','#00ff88'][Math.floor(Math.random()*4)]
+  }));
+  function frame(){
+    const W=canvas.offsetWidth,H=canvas.offsetHeight;
+    ctx.clearRect(0,0,W,H);
+    heroNodes.forEach(n=>{
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;
+      n.glow+=0.018;
+    });
+    heroNodes.forEach((a,i)=>heroNodes.forEach((b,j)=>{
+      if(i>=j)return;
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<170){
+        const al=(1-d/170)*0.45;
+        const grad=ctx.createLinearGradient(a.x,a.y,b.x,b.y);
+        grad.addColorStop(0,a.color.replace(')',`,${al})`).replace('#','rgba(').split('rgba(')[1]?`rgba(${parseInt(a.color.slice(1,3),16)},${parseInt(a.color.slice(3,5),16)},${parseInt(a.color.slice(5,7),16)},${al})`:`rgba(79,142,255,${al})`);
+        grad.addColorStop(1,`rgba(${parseInt(b.color.slice(1,3),16)},${parseInt(b.color.slice(3,5),16)},${parseInt(b.color.slice(5,7),16)},${al})`);
+        ctx.beginPath();ctx.strokeStyle=grad;ctx.lineWidth=0.9;
+        ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      }
+    }));
+    heroNodes.forEach(n=>{
+      const g=(Math.sin(n.glow)*0.35+0.65);
+      const r=parseInt(n.color.slice(1,3),16),gr=parseInt(n.color.slice(3,5),16),b=parseInt(n.color.slice(5,7),16);
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r*2.8,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${r},${gr},${b},0.08)`;ctx.fill();
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle=n.color;ctx.globalAlpha=g;ctx.fill();ctx.globalAlpha=1;
+    });
+    heroAnimId=requestAnimationFrame(frame);
+  }
+  if(heroAnimId)cancelAnimationFrame(heroAnimId);frame();
 }
 
-function genAiGraph() {
-  aiSolving=false;aiPath=[];aiDeadEnds=[];
-  aiNodes=[];aiEdges=[];
-  document.getElementById('ai-log').innerHTML='<span style="color:var(--text-muted);font-size:0.75rem">Click "Run Backtracking" to watch the AI solve step by step.</span>';
-  document.getElementById('think-anim').style.display='none';
+// =====================================================
+// GRAPH BUILDER
+// =====================================================
+let gbNodes=[],gbEdges=[],gbMode='node',gbAnimId,gbDragging=null,gbEdgeStart=null;
+let gbPath=[],gbAnimating=false,gbIsSolving=false,mousePos={x:0,y:0};
 
-  const canvas=document.getElementById('ai-canvas');
-  if(!canvas.offsetWidth){setTimeout(genAiGraph,200);return;}
-  const W=canvas.offsetWidth,H=canvas.offsetHeight;
-  const n=6;
+function initBuilder(){
+  const canvas=document.getElementById('graph-canvas');
+  const ctx=canvas.getContext('2d');
+  function resize(){canvas.width=canvas.offsetWidth*devicePixelRatio;canvas.height=canvas.offsetHeight*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);}
+  resize();window.addEventListener('resize',resize);
+  canvas.onclick=e=>handleBuilderClick(e,canvas);
+  canvas.onmousedown=e=>handleBuilderDown(e,canvas);
+  canvas.onmousemove=e=>handleBuilderMove(e,canvas);
+  canvas.onmouseup=e=>handleBuilderUp(e,canvas);
+  if(gbAnimId)cancelAnimationFrame(gbAnimId);
+  if(gbNodes.length===0)generateRandom();
+  renderBuilder(ctx,canvas);
+}
+function getPos(e,c){const r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+function hitNode(pos){return gbNodes.find(n=>Math.hypot(n.x-pos.x,n.y-pos.y)<22);}
+function handleBuilderClick(e,canvas){
+  if(gbAnimating||gbIsSolving)return;
+  const pos=getPos(e,canvas);
+  if(gbMode==='node'){if(!hitNode(pos)){gbNodes.push({x:pos.x,y:pos.y,id:gbNodes.length,glow:0,visited:false,current:false});updateProgressDots();}}
+}
+function handleBuilderDown(e,canvas){const pos=getPos(e,canvas);if(gbMode==='node')gbDragging=hitNode(pos);else gbEdgeStart=hitNode(pos);}
+function handleBuilderMove(e,canvas){mousePos=getPos(e,canvas);if(gbDragging){gbDragging.x=mousePos.x;gbDragging.y=mousePos.y;}}
+function handleBuilderUp(e,canvas){
+  const pos=getPos(e,canvas);
+  if(gbMode==='edge'&&gbEdgeStart){
+    const end=hitNode(pos);
+    if(end&&end!==gbEdgeStart&&!gbEdges.some(e=>(e.a===gbEdgeStart&&e.b===end)||(e.a===end&&e.b===gbEdgeStart)))
+      gbEdges.push({a:gbEdgeStart,b:end,highlighted:false,faded:false});
+  }
+  gbDragging=null;gbEdgeStart=null;
+}
+function setMode(m){
+  gbMode=m;
+  document.getElementById('mode-label').textContent=m==='node'?'Add Node':'Add Edge';
+  document.getElementById('btn-mode-node').classList.toggle('ctrl-btn-active',m==='node');
+  document.getElementById('btn-mode-edge').classList.toggle('ctrl-btn-active',m==='edge');
+  document.getElementById('graph-canvas').style.cursor=m==='node'?'crosshair':'pointer';
+}
+function generateRandom(){
+  gbNodes=[];gbEdges=[];gbPath=[];gbAnimating=false;gbIsSolving=false;
+  const canvas=document.getElementById('graph-canvas');
+  if(!canvas.offsetWidth){setTimeout(generateRandom,200);return;}
+  const W=canvas.offsetWidth,H=canvas.offsetHeight,n=7;
   for(let i=0;i<n;i++){
     const angle=(i/n)*Math.PI*2;
+    gbNodes.push({x:W/2+(W/2-80)*Math.cos(angle)*0.75+(Math.random()-0.5)*55,y:H/2+(H/2-80)*Math.sin(angle)*0.75+(Math.random()-0.5)*55,id:i,glow:0,visited:false,current:false});
+  }
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(Math.random()<0.55)gbEdges.push({a:gbNodes[i],b:gbNodes[j],highlighted:false,faded:false});
+  updateProgressDots();addLog('Random graph with '+n+' nodes generated.','info');setStatus('idle');
+}
+function resetGraph(){gbNodes=[];gbEdges=[];gbPath=[];gbAnimating=false;gbIsSolving=false;updateProgressDots();document.getElementById('step-log').innerHTML='<span class="step-info">Graph reset.</span>';setStatus('idle');}
+function setStatus(s){const el=document.getElementById('algo-status');el.className='status-badge';const cls={idle:'status-idle',found:'status-found',none:'status-none',running:'status-running'};const lbl={idle:'READY',found:'✓ PATH FOUND',none:'✕ NO PATH',running:'SOLVING...'};el.classList.add(cls[s]);el.textContent=lbl[s];}
+function addLog(msg,type='info'){const el=document.getElementById('step-log');const d=document.createElement('div');d.className=`step-line step-${type}`;d.textContent=msg;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function updateProgressDots(){const el=document.getElementById('progress-dots');el.innerHTML='';gbNodes.forEach(n=>{const d=document.createElement('div');d.className='dot'+(gbPath.includes(n)?' done':'');el.appendChild(d);});}
+function findPath(circuit=false){
+  if(gbNodes.length<2){showToast('Add at least 2 nodes','error');return;}
+  gbIsSolving=true;gbAnimating=false;
+  gbNodes.forEach(n=>{n.visited=false;n.current=false;n.glow=0;});
+  gbEdges.forEach(e=>{e.highlighted=false;e.faded=false;});
+  gbPath=[];setStatus('running');document.getElementById('step-log').innerHTML='';
+  addLog('Starting backtracking...','info');addLog(`Type: ${circuit?'Hamiltonian Circuit':'Hamiltonian Path'}`,'info');
+  setTimeout(()=>{
+    const adj=buildAdj();const steps=[];
+    const found=solve(0,[gbNodes[0]],adj,circuit,steps,gbNodes.length);
+    gbIsSolving=false;
+    if(found){setStatus('found');showToast(circuit?'Circuit found! ✓':'Path found! ✓','success');animatePath(steps);}
+    else{setStatus('none');showToast('No solution exists','error');addLog('No Hamiltonian '+(circuit?'circuit':'path')+' exists.','err');gbEdges.forEach(e=>e.faded=true);}
+  },100);
+}
+function buildAdj(){const adj={};gbNodes.forEach(n=>adj[n.id]=[]);gbEdges.forEach(e=>{adj[e.a.id].push(e.b.id);adj[e.b.id].push(e.a.id);});return adj;}
+function solve(start,path,adj,circuit,steps,total){
+  if(path.length===total){if(!circuit){steps.push({type:'found',path:[...path]});return true;}const hasReturn=adj[path[path.length-1].id].includes(path[0].id);if(hasReturn){steps.push({type:'found',path:[...path]});return true;}return false;}
+  const curr=path[path.length-1];
+  for(const nid of adj[curr.id]){
+    const nb=gbNodes.find(n=>n.id===nid);if(path.includes(nb)){steps.push({type:'skip',from:curr.id,to:nid});continue;}
+    steps.push({type:'try',from:curr.id,to:nid,pathLen:path.length+1});path.push(nb);
+    if(solve(nid,path,adj,circuit,steps,total))return true;
+    steps.push({type:'back',from:curr.id,to:nid});path.pop();
+  }return false;
+}
+function animatePath(steps){
+  gbAnimating=true;let i=0;
+  gbNodes.forEach(n=>{n.visited=false;n.current=false;n.glow=0;});
+  function next(){
+    if(i>=steps.length){gbAnimating=false;return;}
+    const s=steps[i++];
+    if(s.type==='try'){addLog(`Trying: ${s.from}→${s.to} (depth ${s.pathLen})`,'try');const n=gbNodes.find(x=>x.id===s.to);if(n){n.current=true;setTimeout(()=>{n.current=false;n.visited=true;n.glow=1;},200);}}
+    else if(s.type==='back'){addLog(`Backtrack from ${s.to}`,'err');const n=gbNodes.find(x=>x.id===s.to);if(n){n.visited=false;n.glow=0;}}
+    else if(s.type==='found'){
+      gbPath=s.path;gbPath.forEach(n=>{n.visited=true;n.glow=1;});
+      addLog(`✓ Path: ${s.path.map(n=>n.id).join(' → ')}`,'ok');
+      for(let j=0;j<gbPath.length-1;j++){const e=gbEdges.find(e=>(e.a===gbPath[j]&&e.b===gbPath[j+1])||(e.a===gbPath[j+1]&&e.b===gbPath[j]));if(e)e.highlighted=true;}
+      updateProgressDots();gbAnimating=false;return;
+    }
+    setTimeout(next,s.type==='try'?80:35);
+  }next();
+}
+function renderBuilder(ctx,canvas){
+  function frame(){
+    const W=canvas.offsetWidth,H=canvas.offsetHeight;ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(90,110,255,0.05)';
+    for(let x=20;x<W;x+=32)for(let y=20;y<H;y+=32){ctx.beginPath();ctx.arc(x,y,1.2,0,Math.PI*2);ctx.fill();}
+    gbEdges.forEach(e=>{
+      const al=e.faded?0.05:1;
+      ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
+      if(e.highlighted){ctx.strokeStyle=`rgba(0,255,136,${al})`;ctx.lineWidth=2.8;ctx.shadowColor='#00ff88';ctx.shadowBlur=14;}
+      else{ctx.strokeStyle=`rgba(90,110,255,${al*0.45})`;ctx.lineWidth=1.4;ctx.shadowBlur=0;}
+      ctx.stroke();ctx.shadowBlur=0;
+    });
+    if(gbEdgeStart&&gbMode==='edge'){ctx.beginPath();ctx.moveTo(gbEdgeStart.x,gbEdgeStart.y);ctx.lineTo(mousePos.x,mousePos.y);ctx.strokeStyle='rgba(0,229,255,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([]);}
+    gbNodes.forEach(n=>{
+      n.glow=Math.min(1,n.glow+0.05);
+      const color=n.visited?'#00ff88':(n.current?'#ffaa00':'#4f8eff');
+      if(n.visited||n.current){ctx.beginPath();ctx.arc(n.x,n.y,28,0,Math.PI*2);ctx.fillStyle=n.current?'rgba(255,170,0,0.1)':'rgba(0,255,136,0.08)';ctx.fill();}
+      ctx.beginPath();ctx.arc(n.x,n.y,18,0,Math.PI*2);ctx.fillStyle='#0a0e1f';ctx.fill();
+      ctx.strokeStyle=color;ctx.lineWidth=2;
+      if(n.visited||n.current){ctx.shadowColor=color;ctx.shadowBlur=18;}
+      ctx.stroke();ctx.shadowBlur=0;
+      ctx.fillStyle=color;ctx.font='bold 11px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.id,n.x,n.y);
+    });
+    gbAnimId=requestAnimationFrame(frame);
+  }
+  if(gbAnimId)cancelAnimationFrame(gbAnimId);frame();
+}
+
+// =====================================================
+// GAME
+// =====================================================
+let gameNodes=[],gameEdges=[],gameUserPath=[],gameSolution=[],gameScore=0,gameTimer=60,gameTimerInterval=null,gameDifficulty='easy',gameStarted=false,gameAnimId;
+function initGame(){
+  const canvas=document.getElementById('game-canvas');const ctx=canvas.getContext('2d');
+  function resize(){canvas.width=canvas.offsetWidth*devicePixelRatio;canvas.height=canvas.offsetHeight*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);}
+  resize();window.addEventListener('resize',resize);
+  canvas.onclick=e=>handleGameClick(e,canvas);
+  if(gameAnimId)cancelAnimationFrame(gameAnimId);
+  if(gameNodes.length===0)startGame();
+  renderGame(ctx,canvas);
+}
+const DIFF={easy:{nodes:5,time:90},medium:{nodes:7,time:60},hard:{nodes:9,time:45}};
+function startGame(){
+  if(gameTimerInterval)clearInterval(gameTimerInterval);
+  const cfg=DIFF[gameDifficulty];gameNodes=[];gameEdges=[];gameUserPath=[];gameStarted=false;
+  const canvas=document.getElementById('game-canvas');if(!canvas.offsetWidth){setTimeout(startGame,200);return;}
+  const W=canvas.offsetWidth,H=canvas.offsetHeight,n=cfg.nodes;
+  for(let i=0;i<n;i++){const angle=(i/n)*Math.PI*2;gameNodes.push({x:W/2+(W/2-70)*Math.cos(angle)*0.75+(Math.random()-0.5)*38,y:H/2+(H/2-70)*Math.sin(angle)*0.75+(Math.random()-0.5)*38,id:i,selected:false,error:false,errorAnim:0});}
+  const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
+  for(let i=0;i<n-1;i++)gameEdges.push({a:gameNodes[perm[i]],b:gameNodes[perm[i+1]]});
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(Math.random()<0.28&&!gameEdges.some(e=>(e.a===gameNodes[i]&&e.b===gameNodes[j])||(e.a===gameNodes[j]&&e.b===gameNodes[i])))gameEdges.push({a:gameNodes[i],b:gameNodes[j]});
+  gameSolution=perm.map(i=>gameNodes[i]);
+  gameTimer=cfg.time;document.getElementById('game-timer').textContent=gameTimer+'s';document.getElementById('game-timer').classList.remove('warning');
+  document.getElementById('game-path-display').textContent='—';document.getElementById('game-score').textContent=gameScore;gameStarted=true;
+  gameTimerInterval=setInterval(()=>{
+    gameTimer--;document.getElementById('game-timer').textContent=gameTimer+'s';
+    if(gameTimer<=10)document.getElementById('game-timer').classList.add('warning');
+    if(gameTimer<=0){clearInterval(gameTimerInterval);showGameMsg('TIME UP! ⏱','error');gameStarted=false;}
+  },1000);
+}
+function setDifficulty(d){
+  gameDifficulty=d;
+  document.querySelectorAll('.diff-pill').forEach(p=>p.className='diff-pill');
+  const pill=[...document.querySelectorAll('.diff-pill')].find(p=>p.textContent.toLowerCase()===d);
+  if(pill)pill.classList.add(`active-${d==='medium'?'med':d}`);startGame();
+}
+function handleGameClick(e,canvas){
+  if(!gameStarted)return;
+  const r=canvas.getBoundingClientRect();const pos={x:e.clientX-r.left,y:e.clientY-r.top};
+  const node=gameNodes.find(n=>Math.hypot(n.x-pos.x,n.y-pos.y)<24);if(!node)return;
+  if(gameUserPath.includes(node)){node.error=true;node.errorAnim=1;setTimeout(()=>{node.error=false;},800);showGameMsg('Already visited! ✗','error');return;}
+  if(gameUserPath.length>0){const prev=gameUserPath[gameUserPath.length-1];const connected=gameEdges.some(e=>(e.a===prev&&e.b===node)||(e.a===node&&e.b===prev));if(!connected){node.error=true;node.errorAnim=1;setTimeout(()=>{node.error=false;},800);showGameMsg('Not connected! ✗','error');return;}}
+  gameUserPath.push(node);node.selected=true;document.getElementById('game-path-display').textContent=gameUserPath.map(n=>n.id).join(' → ');
+  if(gameUserPath.length===gameNodes.length){
+    clearInterval(gameTimerInterval);const pts=500+gameTimer*12;gameScore+=pts;
+    document.getElementById('game-score').textContent=gameScore;document.getElementById('player-score').textContent=gameScore;document.getElementById('player-row').style.display='flex';
+    showGameMsg('HAMILTONIAN PATH! 🎉','win');gameStarted=false;showToast(`+${pts} pts! Brilliant!`,'success');
+  }
+}
+function resetGamePath(){gameUserPath=[];gameNodes.forEach(n=>{n.selected=false;n.error=false;});document.getElementById('game-path-display').textContent='—';}
+function showGameMsg(msg,type){const el=document.getElementById('game-msg');el.textContent=msg;el.className=`game-msg ${type}`;el.style.display='block';el.style.animation='none';requestAnimationFrame(()=>{el.style.animation='fade-msg 2.2s forwards';});setTimeout(()=>{el.style.display='none';},2300);}
+function renderGame(ctx,canvas){
+  function frame(){
+    const W=canvas.offsetWidth,H=canvas.offsetHeight;ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(79,142,255,0.04)';for(let x=20;x<W;x+=32)for(let y=20;y<H;y+=32){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+    gameEdges.forEach(e=>{
+      let inPath=false;for(let i=0;i<gameUserPath.length-1;i++){if((gameUserPath[i]===e.a&&gameUserPath[i+1]===e.b)||(gameUserPath[i]===e.b&&gameUserPath[i+1]===e.a)){inPath=true;break;}}
+      ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
+      if(inPath){ctx.strokeStyle='#00e5ff';ctx.lineWidth=2.5;ctx.shadowColor='#00e5ff';ctx.shadowBlur=10;}
+      else{ctx.strokeStyle='rgba(90,110,255,0.32)';ctx.lineWidth=1.4;ctx.shadowBlur=0;}
+      ctx.stroke();ctx.shadowBlur=0;
+    });
+    gameNodes.forEach(n=>{
+      if(n.errorAnim>0)n.errorAnim=Math.max(0,n.errorAnim-0.05);
+      const idx=gameUserPath.indexOf(n);let color='#4f8eff';
+      if(n.selected)color='#00ff88';if(n.error)color='#ff3366';
+      if(n.selected){ctx.beginPath();ctx.arc(n.x,n.y,30,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,0.08)';ctx.fill();}
+      if(n.error){ctx.save();ctx.translate(Math.sin(Date.now()*0.06)*n.errorAnim*5,0);}
+      ctx.beginPath();ctx.arc(n.x,n.y,20,0,Math.PI*2);ctx.fillStyle='#090d1e';ctx.fill();
+      ctx.strokeStyle=color;ctx.lineWidth=2;
+      if(n.selected||n.error){ctx.shadowColor=color;ctx.shadowBlur=16;}ctx.stroke();ctx.shadowBlur=0;
+      if(n.error)ctx.restore();
+      ctx.fillStyle=color;ctx.font=`bold ${idx>=0?'10':'12'}px JetBrains Mono,monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(idx>=0?idx+1:n.id,n.x,n.y);
+    });
+    gameAnimId=requestAnimationFrame(frame);
+  }
+  if(gameAnimId)cancelAnimationFrame(gameAnimId);frame();
+}
+
+// =====================================================
+// SIMULATION
+// =====================================================
+let simNodes=[],simEdges=[],simPath=[],simTruck={x:0,y:0},simRunning=false,simAnimId,simStep=0,simSpeed=1,simProg=0;
+let simDistTotal=0,simHousesVisited=0,simElapsed=0,simStartTime=0;
+const ICONS=['🏠','🏡','🏢','🏪','🏨','🏦','🏗','🏭','🏩','🏬'];
+function initSim(){
+  const canvas=document.getElementById('sim-canvas');const ctx=canvas.getContext('2d');
+  function resize(){canvas.width=canvas.offsetWidth*devicePixelRatio;canvas.height=canvas.offsetHeight*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);}
+  resize();window.addEventListener('resize',resize);
+  if(simNodes.length===0)buildSimGraph(canvas);
+  if(simAnimId)cancelAnimationFrame(simAnimId);renderSim(ctx,canvas);
+}
+function buildSimGraph(canvas){
+  if(!canvas.offsetWidth){setTimeout(()=>buildSimGraph(canvas),200);return;}
+  const W=canvas.offsetWidth,H=canvas.offsetHeight;simNodes=[];simEdges=[];simPath=[];simStep=0;simProg=0;
+  simDistTotal=0;simHousesVisited=0;simElapsed=0;simRunning=false;
+  const n=10;
+  for(let i=0;i<n;i++)simNodes.push({x:80+Math.random()*(W-160),y:60+Math.random()*(H-120),id:i,icon:ICONS[i],visited:false,label:'Stop '+(i+1)});
+  const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
+  for(let i=0;i<n-1;i++)simEdges.push({a:simNodes[perm[i]],b:simNodes[perm[i+1]]});
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(Math.random()<0.22&&!simEdges.some(e=>(e.a===simNodes[i]&&e.b===simNodes[j])||(e.a===simNodes[j]&&e.b===simNodes[i])))simEdges.push({a:simNodes[i],b:simNodes[j]});
+  simPath=perm.map(i=>simNodes[i]);
+  simTruck={x:simPath[0].x,y:simPath[0].y};updateSimMetrics();
+}
+function updateSimMetrics(){
+  document.getElementById('met-dist').textContent=simDistTotal.toFixed(1)+' km';
+  document.getElementById('met-eff').textContent=(simRunning||simHousesVisited>0)?Math.round((simHousesVisited/simNodes.length)*100)+'%':'—';
+  document.getElementById('met-houses').textContent=simHousesVisited+'/'+simNodes.length;
+  document.getElementById('met-time').textContent=simElapsed.toFixed(1)+'s';
+}
+function startSimulation(){
+  if(!simPath.length)return;simRunning=true;simStep=0;simProg=0;
+  simDistTotal=0;simHousesVisited=0;simElapsed=0;simStartTime=Date.now();
+  simNodes.forEach(n=>n.visited=false);simPath[0].visited=true;simHousesVisited=1;
+  simTruck={x:simPath[0].x,y:simPath[0].y};updateSimMetrics();
+}
+function resetSim(){simRunning=false;const canvas=document.getElementById('sim-canvas');buildSimGraph(canvas);}
+function setSpeeed(s){
+  simSpeed=s;document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));
+  [...document.querySelectorAll('.speed-btn')].forEach(b=>{if(b.textContent===s+'×'||b.textContent===s.toString()+'×')b.classList.add('active');});
+}
+function renderSim(ctx,canvas){
+  function frame(){
+    const W=canvas.offsetWidth,H=canvas.offsetHeight;ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(79,142,255,0.045)';ctx.lineWidth=1;
+    for(let x=0;x<W;x+=42){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=42){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    simEdges.forEach(e=>{
+      let inPath=false;for(let i=0;i<simStep&&i<simPath.length-1;i++){if((simPath[i]===e.a&&simPath[i+1]===e.b)||(simPath[i]===e.b&&simPath[i+1]===e.a)){inPath=true;break;}}
+      ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
+      ctx.strokeStyle=inPath?'rgba(0,229,255,0.55)':'rgba(90,110,255,0.18)';ctx.lineWidth=inPath?2.2:1.3;
+      if(inPath){ctx.shadowColor='#00e5ff';ctx.shadowBlur=7;}ctx.stroke();ctx.shadowBlur=0;
+    });
+    simNodes.forEach(n=>{
+      if(n.visited){ctx.beginPath();ctx.arc(n.x,n.y,26,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,0.1)';ctx.fill();}
+      ctx.beginPath();ctx.arc(n.x,n.y,19,0,Math.PI*2);ctx.fillStyle='#090d1e';ctx.fill();
+      ctx.strokeStyle=n.visited?'#00ff88':'rgba(90,110,255,0.45)';ctx.lineWidth=1.8;
+      if(n.visited){ctx.shadowColor='#00ff88';ctx.shadowBlur=10;}ctx.stroke();ctx.shadowBlur=0;
+      ctx.font='12px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.icon,n.x,n.y);
+      ctx.fillStyle=n.visited?'#00ff88':'#8899cc';ctx.font='8px Inter,sans-serif';ctx.fillText(n.label,n.x,n.y+28);
+    });
+    if(simRunning&&simStep<simPath.length-1){
+      simProg+=0.014*simSpeed;
+      if(simProg>=1){
+        simProg=0;simStep++;
+        if(simStep<simPath.length){const from=simPath[simStep-1],to=simPath[simStep];simDistTotal+=Math.hypot(to.x-from.x,to.y-from.y)*0.045;simPath[simStep].visited=true;simHousesVisited++;}
+        if(simStep>=simPath.length-1){simRunning=false;showToast('All stops delivered! ✓','success');}
+      }
+      simElapsed=(Date.now()-simStartTime)/1000;updateSimMetrics();
+    }
+    if(simStep<simPath.length-1){const from=simPath[simStep],to=simPath[simStep+1];simTruck.x=from.x+(to.x-from.x)*simProg;simTruck.y=from.y+(to.y-from.y)*simProg;}
+    const tx=simTruck.x,ty=simTruck.y;
+    ctx.beginPath();ctx.arc(tx,ty,16,0,Math.PI*2);ctx.fillStyle='rgba(255,170,0,0.14)';ctx.fill();
+    ctx.beginPath();ctx.arc(tx,ty,11,0,Math.PI*2);ctx.fillStyle='#090d1e';ctx.fill();
+    ctx.strokeStyle='#ffaa00';ctx.lineWidth=2;ctx.shadowColor='#ffaa00';ctx.shadowBlur=14;ctx.stroke();ctx.shadowBlur=0;
+    ctx.font='9px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🚚',tx,ty);
+    simAnimId=requestAnimationFrame(frame);
+  }
+  if(simAnimId)cancelAnimationFrame(simAnimId);frame();
+}
+
+// =====================================================
+// AI SOLVER
+// =====================================================
+let aiNodes=[],aiEdges=[],aiPath=[],aiDeadEnds=[],aiAnimId,aiSolving=false,aiStepDelay=100;
+// adjacency matrix for custom input
+let aiMatrix=[];
+
+function initAi(){
+  const canvas=document.getElementById('ai-canvas');const ctx=canvas.getContext('2d');
+  function resize(){canvas.width=canvas.offsetWidth*devicePixelRatio;canvas.height=canvas.offsetHeight*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);}
+  resize();window.addEventListener('resize',resize);
+  if(aiNodes.length===0)genAiGraph();
+  if(aiAnimId)cancelAnimationFrame(aiAnimId);
+  renderAi(ctx,canvas);
+  buildMatrixGrid();// init matrix tab
+}
+
+function updateAiSpeed(v){
+  const speeds=[600,400,250,160,100,70,45,28,16,8];
+  aiStepDelay=speeds[Math.min(v-1,9)];
+  document.getElementById('ai-speed-val').textContent=v+'×';
+}
+
+// ── Tab switching ──
+function switchAiTab(name){
+  document.querySelectorAll('.ai-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.input-section').forEach(s=>s.classList.remove('active'));
+  document.querySelector(`.ai-tab[onclick="switchAiTab('${name}')"]`).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ── Matrix builder ──
+function buildMatrixGrid(){
+  const n=parseInt(document.getElementById('matrix-node-count').value)||5;
+  const clamped=Math.min(Math.max(n,2),8);
+  document.getElementById('matrix-node-count').value=clamped;
+  // Resize matrix
+  const old=aiMatrix;aiMatrix=[];
+  for(let i=0;i<clamped;i++){aiMatrix.push([]);for(let j=0;j<clamped;j++)aiMatrix[i].push(old[i]&&old[i][j]?old[i][j]:0);}
+  const wrap=document.getElementById('matrix-grid-wrap');
+  wrap.innerHTML='';
+  const grid=document.createElement('div');
+  grid.className='matrix-grid';
+  grid.style.gridTemplateColumns=`repeat(${clamped+1},1fr)`;
+  // Header row
+  const blank=document.createElement('div');blank.style.cssText='display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text-muted);font-family:var(--font-display)';blank.textContent='↓→';grid.appendChild(blank);
+  for(let j=0;j<clamped;j++){const h=document.createElement('div');h.style.cssText='display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--neon-cyan);font-family:var(--font-display);padding:3px 0';h.textContent=j;grid.appendChild(h);}
+  for(let i=0;i<clamped;i++){
+    const rh=document.createElement('div');rh.style.cssText='display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--neon-cyan);font-family:var(--font-display)';rh.textContent=i;grid.appendChild(rh);
+    for(let j=0;j<clamped;j++){
+      const cell=document.createElement('button');
+      cell.className='matrix-cell'+(aiMatrix[i][j]?' on':'');
+      if(i===j){cell.style.cssText='background:rgba(255,51,102,0.05);cursor:not-allowed;opacity:0.3';cell.textContent='✕';}
+      else{cell.textContent=aiMatrix[i][j]?'1':'0';cell.onclick=()=>toggleCell(i,j,cell,clamped);}
+      grid.appendChild(cell);
+    }
+  }
+  wrap.appendChild(grid);
+}
+function toggleCell(i,j,cell,n){
+  aiMatrix[i][j]=aiMatrix[i][j]?0:1;
+  aiMatrix[j][i]=aiMatrix[i][j];// symmetric
+  cell.classList.toggle('on',!!aiMatrix[i][j]);cell.textContent=aiMatrix[i][j]?'1':'0';
+  // mirror cell
+  const grid=document.getElementById('matrix-grid-wrap').querySelector('.matrix-grid');
+  const all=[...grid.querySelectorAll('.matrix-cell')];
+  const mirrorIdx=j*(n+1)+1+i;// offset by header
+  // re-render is simpler:
+  buildMatrixGrid();
+}
+function loadFromMatrix(){
+  const err=document.getElementById('matrix-error');err.style.display='none';
+  const n=aiMatrix.length;
+  if(n<2){err.textContent='Need at least 2 nodes.';err.style.display='block';return;}
+  buildAiFromAdj(aiMatrix,n);
+  showToast('Graph loaded from matrix!','success');
+}
+
+// ── Edge list parser ──
+function loadFromEdgeList(){
+  const err=document.getElementById('edge-error');err.style.display='none';
+  const nRaw=parseInt(document.getElementById('edge-node-count').value);
+  if(!nRaw||nRaw<2||nRaw>12){err.textContent='Node count must be 2–12.';err.style.display='block';return;}
+  const raw=document.getElementById('edge-list-input').value.trim();
+  if(!raw){err.textContent='Enter at least one edge.';err.style.display='block';return;}
+  const adj=Array.from({length:nRaw},()=>Array(nRaw).fill(0));
+  const lines=raw.split('\n');let parseErr=null;
+  for(const line of lines){
+    const trimmed=line.trim();if(!trimmed)continue;
+    const parts=trimmed.split(/[-,\s]+/).filter(Boolean);
+    if(parts.length<2){parseErr=`Invalid line: "${line}"`;break;}
+    const a=parseInt(parts[0]),b=parseInt(parts[1]);
+    if(isNaN(a)||isNaN(b)||a<0||a>=nRaw||b<0||b>=nRaw){parseErr=`Node out of range [0-${nRaw-1}]: "${line}"`;break;}
+    if(a===b){parseErr=`Self-loop not allowed: "${line}"`;break;}
+    adj[a][b]=1;adj[b][a]=1;
+  }
+  if(parseErr){err.textContent=parseErr;err.style.display='block';return;}
+  buildAiFromAdj(adj,nRaw);showToast('Graph loaded from edge list!','success');
+}
+
+// ── Presets ──
+const PRESETS={
+  petersen:{n:10,edges:[[0,1],[0,4],[0,5],[1,2],[1,6],[2,3],[2,7],[3,4],[3,8],[4,9],[5,7],[5,8],[6,8],[6,9],[7,9]]},
+  k5:{n:5,edges:[[0,1],[0,2],[0,3],[0,4],[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]},
+  cycle6:{n:6,edges:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0]]},
+  path5:{n:5,edges:[[0,1],[1,2],[2,3],[3,4]]},
+  nosol:{n:5,edges:[[0,2],[0,3],[1,2],[1,3],[2,4],[3,4]]}
+};
+function loadPreset(name){
+  const p=PRESETS[name];if(!p)return;
+  const adj=Array.from({length:p.n},()=>Array(p.n).fill(0));
+  p.edges.forEach(([a,b])=>{adj[a][b]=1;adj[b][a]=1;});
+  buildAiFromAdj(adj,p.n);
+  const labels={petersen:'Petersen Graph',k5:'Complete K₅',cycle6:'Cycle C₆',path5:'Path P₅',nosol:'No Solution Graph'};
+  showToast(`Loaded: ${labels[name]}`,'info');
+  // update matrix tab too
+  document.getElementById('matrix-node-count').value=p.n;
+  aiMatrix=adj.map(r=>[...r]);buildMatrixGrid();
+}
+
+// ── Build AI graph from adjacency matrix ──
+function buildAiFromAdj(adj,n){
+  aiSolving=false;aiPath=[];aiDeadEnds=[];
+  aiNodes=[];aiEdges=[];
+  document.getElementById('ai-log').innerHTML='<span style="color:var(--text-muted);font-size:0.72rem">Graph loaded. Click "Run Backtracking" to solve.</span>';
+  document.getElementById('think-anim').classList.remove('visible');
+
+  const canvas=document.getElementById('ai-canvas');
+  const W=canvas.offsetWidth||600,H=canvas.offsetHeight||500;
+  for(let i=0;i<n;i++){
+    const angle=(i/n)*Math.PI*2-Math.PI/2;
+    const rx=Math.min(W,H)*0.36,ry=Math.min(W,H)*0.36;
+    // For larger graphs, use two rings
+    const ring=n>6&&i>=Math.floor(n/2)?0.55:1;
     aiNodes.push({
-      x:W/2+(W/2-90)*Math.cos(angle)*0.7,
-      y:H/2+(H/2-90)*Math.sin(angle)*0.7,
+      x:W/2+rx*ring*Math.cos(angle+(n>6&&i>=Math.floor(n/2)?Math.PI/n:0)),
+      y:H/2+ry*ring*Math.sin(angle+(n>6&&i>=Math.floor(n/2)?Math.PI/n:0)),
       id:i,state:'idle',depth:-1
     });
   }
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(adj[i][j])aiEdges.push({a:aiNodes[i],b:aiNodes[j],state:'idle'});
+  setAiExplain('HOW IT WORKS','The backtracking algorithm starts at node 0 and extends the current path one vertex at a time. When it hits a dead end it <em style="color:var(--neon-red);font-style:normal">backtracks</em> and tries a different neighbor — repeating until a Hamiltonian path is found or all possibilities are exhausted.');
+}
+
+function genAiGraph(){
+  aiSolving=false;aiPath=[];aiDeadEnds=[];
+  aiNodes=[];aiEdges=[];
+  document.getElementById('ai-log').innerHTML='<span style="color:var(--text-muted);font-size:0.72rem">Click "Run Backtracking" to solve.</span>';
+  document.getElementById('think-anim').classList.remove('visible');
+  const canvas=document.getElementById('ai-canvas');
+  if(!canvas.offsetWidth){setTimeout(genAiGraph,200);return;}
+  const W=canvas.offsetWidth,H=canvas.offsetHeight,n=6;
+  for(let i=0;i<n;i++){const angle=(i/n)*Math.PI*2;aiNodes.push({x:W/2+(Math.min(W,H)/2-90)*Math.cos(angle)*0.75,y:H/2+(Math.min(W,H)/2-90)*Math.sin(angle)*0.75,id:i,state:'idle',depth:-1});}
   const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
-  for(let i=0;i<n-1;i++) aiEdges.push({a:aiNodes[perm[i]],b:aiNodes[perm[i+1]],state:'idle'});
-  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) {
-    if(Math.random()<0.3&&!aiEdges.some(e=>(e.a===aiNodes[i]&&e.b===aiNodes[j])||(e.a===aiNodes[j]&&e.b===aiNodes[i])))
-      aiEdges.push({a:aiNodes[i],b:aiNodes[j],state:'idle'});
-  }
+  for(let i=0;i<n-1;i++)aiEdges.push({a:aiNodes[perm[i]],b:aiNodes[perm[i+1]],state:'idle'});
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(Math.random()<0.3&&!aiEdges.some(e=>(e.a===aiNodes[i]&&e.b===aiNodes[j])||(e.a===aiNodes[j]&&e.b===aiNodes[i])))aiEdges.push({a:aiNodes[i],b:aiNodes[j],state:'idle'});
+  // sync matrix
+  const adj=Array.from({length:n},()=>Array(n).fill(0));
+  aiEdges.forEach(e=>{adj[e.a.id][e.b.id]=1;adj[e.b.id][e.a.id]=1;});
+  aiMatrix=adj;document.getElementById('matrix-node-count').value=n;buildMatrixGrid();
 }
+function resetAi(){aiSolving=false;genAiGraph();}
 
-function resetAi() {aiSolving=false;genAiGraph();}
+function setAiExplain(title,body){document.getElementById('ai-explain').innerHTML=`<strong>${title}</strong><br><br>${body}`;}
 
-function addAiLog(msg,type) {
+function addAiLog(msg,type){
   const el=document.getElementById('ai-log');
-  const div=document.createElement('div');
-  div.className='log-entry';
-  const icon={try:'?',ok:'✓',back:'✗',info:'·'}[type]||'·';
-  div.innerHTML=`<span class="log-icon log-${type}">${icon}</span><span class="log-${type}">${msg}</span>`;
-  el.appendChild(div);
-  el.scrollTop=el.scrollHeight;
+  const d=document.createElement('div');d.className='log-entry';
+  const icons={try:'?',ok:'✓',back:'✗',info:'·'};
+  d.innerHTML=`<span class="log-icon log-${type}">${icons[type]||'·'}</span><span class="log-${type}">${msg}</span>`;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
 }
 
-function startAiSolver() {
-  if(aiSolving) return;
+function startAiSolver(){
+  if(aiSolving)return;
+  if(aiNodes.length===0){showToast('Load a graph first!','error');return;}
   aiSolving=true;aiPath=[];aiDeadEnds=[];
   aiNodes.forEach(n=>{n.state='idle';n.depth=-1;});
   aiEdges.forEach(e=>e.state='idle');
   document.getElementById('ai-log').innerHTML='';
-  document.getElementById('think-anim').style.display='flex';
-
-  const adj={};
-  aiNodes.forEach(n=>adj[n.id]=[]);
+  document.getElementById('think-anim').classList.add('visible');
+  const adj={};aiNodes.forEach(n=>adj[n.id]=[]);
   aiEdges.forEach(e=>{adj[e.a.id].push(e.b.id);adj[e.b.id].push(e.a.id);});
-
-  const steps=[];
-  const path=[aiNodes[0]];
-  aiNodes[0].state='visited';
+  const steps=[];const path=[aiNodes[0]];
   solveAi(path,adj,steps,aiNodes.length);
-
   let i=0;
-  function playStep() {
-    if(!aiSolving||i>=steps.length){
-      document.getElementById('think-anim').style.display='none';
-      aiSolving=false;return;
-    }
+  function playStep(){
+    if(!aiSolving||i>=steps.length){document.getElementById('think-anim').classList.remove('visible');aiSolving=false;return;}
     const s=steps[i++];
-    const fromN=aiNodes.find(n=>n.id===s.from);
     const toN=aiNodes.find(n=>n.id===s.to);
-    const edge=aiEdges.find(e=>(e.a.id===s.from&&e.b.id===s.to)||(e.a.id===s.to&&e.b.id===s.from));
-
+    const edge=s.from!==undefined?aiEdges.find(e=>(e.a.id===s.from&&e.b.id===s.to)||(e.a.id===s.to&&e.b.id===s.from)):null;
     if(s.type==='try'){
-      if(toN){toN.state='current';toN.depth=s.depth;}
-      if(edge) edge.state='active';
+      if(toN){toN.state='current';toN.depth=s.depth;}if(edge)edge.state='active';
       addAiLog(`Try ${s.from} → ${s.to} (depth ${s.depth})`,'try');
-      document.getElementById('ai-explain').innerHTML='<strong>ATTEMPTING PATH</strong><br><br>Extending path to node '+s.to+'. Checking if this leads to a solution...';
-    } else if(s.type==='accept'){
-      if(toN){toN.state='visited';}
-      if(edge) edge.state='used';
-    } else if(s.type==='back'){
-      if(toN){toN.state='dead';aiDeadEnds.push(toN.id);}
-      if(edge) edge.state='dead';
+      setAiExplain('ATTEMPTING','Extending path to node <em style="color:var(--neon-amber);font-style:normal">'+s.to+'</em>. Checking if unvisited neighbors remain...');
+    }else if(s.type==='accept'){
+      if(toN)toN.state='visited';if(edge)edge.state='used';
+    }else if(s.type==='back'){
+      if(toN){toN.state='dead';aiDeadEnds.push(toN.id);}if(edge)edge.state='dead';
       addAiLog(`Backtrack ✗ from ${s.to}`,'back');
-      document.getElementById('ai-explain').innerHTML='<strong>BACKTRACKING</strong><br><br>Node '+s.to+' led to a dead end. No unvisited neighbors remain. Trying different path...';
-      setTimeout(()=>{if(toN)toN.state='idle';if(edge)edge.state='idle';},600);
-    } else if(s.type==='found'){
+      setAiExplain('BACKTRACKING','Node <em style="color:var(--neon-red);font-style:normal">'+s.to+'</em> is a dead end — no unvisited neighbors remain. Trying a different route...');
+      setTimeout(()=>{if(toN&&toN.state==='dead')toN.state='idle';if(edge&&edge.state==='dead')edge.state='idle';},500);
+    }else if(s.type==='found'){
       addAiLog('✓ Hamiltonian path found!','ok');
-      aiPath=s.path;
-      aiPath.forEach(n=>{n.state='solution';});
-      aiEdges.forEach(e=>{
-        for(let k=0;k<aiPath.length-1;k++){
-          if((e.a===aiPath[k]&&e.b===aiPath[k+1])||(e.a===aiPath[k+1]&&e.b===aiPath[k])) e.state='solution';
-        }
-      });
-      document.getElementById('ai-explain').innerHTML='<strong>SOLUTION FOUND!</strong><br><br>Path: '+s.path.map(n=>n.id).join(' → ')+'<br><br>All vertices visited exactly once. Hamiltonian path exists!';
-      document.getElementById('think-anim').style.display='none';
-      showToast('AI found the path! 🎯','success');
-      aiSolving=false;return;
+      aiPath=s.path;aiPath.forEach(n=>{n.state='solution';});
+      aiEdges.forEach(e=>{for(let k=0;k<aiPath.length-1;k++){if((e.a===aiPath[k]&&e.b===aiPath[k+1])||(e.a===aiPath[k+1]&&e.b===aiPath[k]))e.state='solution';}});
+      setAiExplain('SOLUTION FOUND! ✓','Path: <em style="color:var(--neon-green);font-style:normal">'+s.path.map(n=>n.id).join(' → ')+'</em><br><br>All '+s.path.length+' vertices visited exactly once. Hamiltonian path exists!');
+      document.getElementById('think-anim').classList.remove('visible');
+      showToast('AI found the path! 🎯','success');aiSolving=false;return;
+    }else if(s.type==='nofound'){
+      addAiLog('✕ No Hamiltonian path exists.','back');
+      setAiExplain('NO SOLUTION','This graph has <em style="color:var(--neon-red);font-style:normal">no Hamiltonian path</em>. All possible routes were explored and none visited every vertex exactly once.');
+      document.getElementById('think-anim').classList.remove('visible');
+      showToast('No solution exists for this graph','error');aiSolving=false;return;
     }
-    setTimeout(playStep, aiStepDelay);
+    setTimeout(playStep,aiStepDelay);
   }
-  setTimeout(playStep, 200);
+  setTimeout(playStep,200);
 }
-
-function solveAi(path, adj, steps, total) {
-  if(path.length===total){
-    steps.push({type:'found',path:[...path]});return true;
-  }
+function solveAi(path,adj,steps,total){
+  if(path.length===total){steps.push({type:'found',path:[...path]});return true;}
   const curr=path[path.length-1];
   for(const nid of adj[curr.id]){
-    const nb=aiNodes.find(n=>n.id===nid);
-    if(path.includes(nb)) continue;
+    const nb=aiNodes.find(n=>n.id===nid);if(path.includes(nb))continue;
     steps.push({type:'try',from:curr.id,to:nid,depth:path.length});
-    path.push(nb);
-    steps.push({type:'accept',from:curr.id,to:nid});
-    if(solveAi(path,adj,steps,total)) return true;
-    steps.push({type:'back',from:curr.id,to:nid});
-    path.pop();
-  }
-  return false;
+    path.push(nb);steps.push({type:'accept',from:curr.id,to:nid});
+    if(solveAi(path,adj,steps,total))return true;
+    steps.push({type:'back',from:curr.id,to:nid});path.pop();
+  }return false;
 }
 
-function renderAi(ctx, canvas) {
-  const colors={idle:'#4f8eff',current:'#ffaa00',visited:'#a259ff',dead:'#ff3366',solution:'#00ff88'};
-  const edgeColors={idle:'rgba(99,120,255,0.3)',active:'rgba(255,170,0,0.8)',used:'rgba(162,89,255,0.7)',dead:'rgba(255,51,102,0.2)',solution:'rgba(0,255,136,0.9)'};
+function renderAi(ctx,canvas){
+  const nodeColors={idle:'#4f8eff',current:'#ffaa00',visited:'#a259ff',dead:'#ff3366',solution:'#00ff88'};
+  const edgeColors={idle:'rgba(90,110,255,0.28)',active:'rgba(255,170,0,0.85)',used:'rgba(176,106,255,0.65)',dead:'rgba(255,51,102,0.18)',solution:'rgba(0,255,136,0.9)'};
   function frame(){
-    const W=canvas.offsetWidth,H=canvas.offsetHeight;
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='rgba(79,142,255,0.03)';
-    for(let x=20;x<W;x+=30) for(let y=20;y<H;y+=30){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
-
+    const W=canvas.offsetWidth,H=canvas.offsetHeight;ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(79,142,255,0.028)';for(let x=20;x<W;x+=32)for(let y=20;y<H;y+=32){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
     aiEdges.forEach(e=>{
       ctx.beginPath();ctx.moveTo(e.a.x,e.a.y);ctx.lineTo(e.b.x,e.b.y);
-      const c=edgeColors[e.state]||edgeColors.idle;
-      ctx.strokeStyle=c;
-      ctx.lineWidth=e.state==='solution'?3:e.state==='active'?2.5:1.5;
-      if(e.state==='solution'){ctx.shadowColor='#00ff88';ctx.shadowBlur=10;}
-      else if(e.state==='active'){ctx.shadowColor='#ffaa00';ctx.shadowBlur=8;}
+      ctx.strokeStyle=edgeColors[e.state]||edgeColors.idle;
+      ctx.lineWidth=e.state==='solution'?3:e.state==='active'?2.5:1.4;
+      if(e.state==='solution'){ctx.shadowColor='#00ff88';ctx.shadowBlur=12;}
+      else if(e.state==='active'){ctx.shadowColor='#ffaa00';ctx.shadowBlur=10;}
       ctx.stroke();ctx.shadowBlur=0;
-      if(e.state==='dead'){
-        const mx=(e.a.x+e.b.x)/2,my=(e.a.y+e.b.y)/2;
-        ctx.fillStyle='rgba(255,51,102,0.6)';ctx.font='10px sans-serif';
-        ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('✗',mx,my);
-      }
+      if(e.state==='dead'){const mx=(e.a.x+e.b.x)/2,my=(e.a.y+e.b.y)/2;ctx.fillStyle='rgba(255,51,102,0.55)';ctx.font='9px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('✗',mx,my);}
     });
-
     aiNodes.forEach(n=>{
-      const c=colors[n.state]||colors.idle;
+      const c=nodeColors[n.state]||nodeColors.idle;
       if(n.state!=='idle'){
-        ctx.beginPath();ctx.arc(n.x,n.y,30,0,Math.PI*2);
-        ctx.fillStyle=c.replace(')',',0.1)').replace('rgb','rgba')||'rgba(79,142,255,0.1)';
-        ctx.fillStyle=(n.state==='solution'?'rgba(0,255,136,0.12)':n.state==='current'?'rgba(255,170,0,0.12)':'rgba(162,89,255,0.1)');
+        ctx.beginPath();ctx.arc(n.x,n.y,34,0,Math.PI*2);
+        ctx.fillStyle=n.state==='solution'?'rgba(0,255,136,0.1)':n.state==='current'?'rgba(255,170,0,0.1)':n.state==='dead'?'rgba(255,51,102,0.08)':'rgba(162,89,255,0.08)';
         ctx.fill();
       }
-      ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);
-      ctx.fillStyle='#0d1225';ctx.fill();
-      ctx.strokeStyle=c;ctx.lineWidth=2;
-      if(n.state!=='idle'){ctx.shadowColor=c;ctx.shadowBlur=16;}
-      ctx.stroke();ctx.shadowBlur=0;
-      ctx.fillStyle=c;ctx.font='bold 12px JetBrains Mono,monospace';
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(n.id,n.x,n.y);
-
-      // State label
+      ctx.beginPath();ctx.arc(n.x,n.y,22,0,Math.PI*2);ctx.fillStyle='#080c1f';ctx.fill();
+      ctx.strokeStyle=c;ctx.lineWidth=n.state==='solution'?3:2;
+      if(n.state!=='idle'){ctx.shadowColor=c;ctx.shadowBlur=18;}ctx.stroke();ctx.shadowBlur=0;
+      ctx.fillStyle=c;ctx.font='bold 12px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.id,n.x,n.y);
       if(n.state!=='idle'){
-        ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(n.x-20,n.y+26,40,14);
-        ctx.fillStyle=c;ctx.font='8px Inter,sans-serif';
-        ctx.fillText(n.state.toUpperCase(),n.x,n.y+33);
+        const stateLabels={current:'TRY',visited:'USED',dead:'DEAD',solution:'✓'};
+        const sl=stateLabels[n.state];if(sl){
+          ctx.fillStyle='rgba(0,0,0,0.75)';ctx.beginPath();ctx.roundRect(n.x-18,n.y+25,36,14,3);ctx.fill();
+          ctx.fillStyle=c;ctx.font='7px Inter,sans-serif';ctx.textAlign='center';ctx.fillText(sl,n.x,n.y+32);
+        }
       }
     });
-
     aiAnimId=requestAnimationFrame(frame);
   }
-  if(aiAnimId) cancelAnimationFrame(aiAnimId);
-  frame();
+  if(aiAnimId)cancelAnimationFrame(aiAnimId);frame();
 }
 
 // =====================================================
-// LEARN PAGE
+// LEARN
 // =====================================================
-let learnAnim1, learnAnim2;
-
-function initLearn() {
-  initLearnCanvas(1, false);
-  initLearnCanvas(2, true);
-}
-
-function initLearnCanvas(n, circuit) {
-  const canvas=document.getElementById('learn-canvas-'+n);
-  if(!canvas) return;
+let learnAnim1,learnAnim2;
+function initLearn(){initLearnCanvas(1,false);initLearnCanvas(2,true);}
+function initLearnCanvas(num,circuit){
+  const canvas=document.getElementById('learn-canvas-'+num);if(!canvas)return;
   const ctx=canvas.getContext('2d');
-  canvas.width=canvas.offsetWidth*devicePixelRatio||300;
-  canvas.height=canvas.offsetHeight*devicePixelRatio||130;
+  canvas.width=(canvas.offsetWidth||300)*devicePixelRatio;canvas.height=(canvas.offsetHeight||130)*devicePixelRatio;
   ctx.scale(devicePixelRatio,devicePixelRatio);
-
-  const W=canvas.offsetWidth||300, H=canvas.offsetHeight||130;
-  const nc=5, nodes=[];
-  for(let i=0;i<nc;i++){
-    const angle=(i/nc)*Math.PI*2-Math.PI/2;
-    nodes.push({x:W/2+(W/2-30)*Math.cos(angle)*0.7, y:H/2+(H/2-18)*Math.sin(angle)*0.7, id:i});
-  }
-  const path=[0,1,2,3,4];
-  let t=0;
-  const id=n===1?learnAnim1:learnAnim2;
-  if(id) cancelAnimationFrame(id);
-
+  const W=canvas.offsetWidth||300,H=canvas.offsetHeight||130,nc=5,nodes=[];
+  for(let i=0;i<nc;i++){const angle=(i/nc)*Math.PI*2-Math.PI/2;nodes.push({x:W/2+(W/2-28)*Math.cos(angle)*0.72,y:H/2+(H/2-16)*Math.sin(angle)*0.72,id:i});}
+  const path=[0,1,2,3,4];let t=0;
+  if(num===1&&learnAnim1)cancelAnimationFrame(learnAnim1);
+  if(num===2&&learnAnim2)cancelAnimationFrame(learnAnim2);
   function frame(){
-    ctx.clearRect(0,0,W,H);
-    t+=0.008;
-    const progress=((Math.sin(t)+1)/2);
-    const step=progress*(nc-1+(circuit?1:0));
-
-    // Draw all edges (for circuit: connect 4→0)
-    for(let i=0;i<nc;i++) for(let j=i+1;j<nc;j++){
-      ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);
-      ctx.strokeStyle='rgba(99,120,255,0.2)';ctx.lineWidth=1;ctx.stroke();
-    }
-    // Draw path edges
+    ctx.clearRect(0,0,W,H);t+=0.007;
+    const progress=(Math.sin(t)+1)/2,step=progress*(nc-1+(circuit?1:0));
+    for(let i=0;i<nc;i++)for(let j=i+1;j<nc;j++){ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle='rgba(90,110,255,0.18)';ctx.lineWidth=1;ctx.stroke();}
     const total=circuit?nc:nc-1;
     for(let i=0;i<Math.min(Math.floor(step),total);i++){
-      const a=nodes[path[i%nc]], b=nodes[path[(i+1)%nc]];
+      const a=nodes[path[i%nc]],b=nodes[path[(i+1)%nc]];
       ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-      ctx.strokeStyle=circuit?'rgba(162,89,255,0.9)':'rgba(79,142,255,0.9)';ctx.lineWidth=2;
-      ctx.shadowColor=circuit?'#a259ff':'#4f8eff';ctx.shadowBlur=8;ctx.stroke();ctx.shadowBlur=0;
+      ctx.strokeStyle=circuit?'rgba(176,106,255,0.9)':'rgba(79,142,255,0.9)';ctx.lineWidth=2.2;
+      ctx.shadowColor=circuit?'#b06aff':'#4f8eff';ctx.shadowBlur=9;ctx.stroke();ctx.shadowBlur=0;
     }
-    // Nodes
     nodes.forEach((nd,i)=>{
       const active=i<=Math.floor(step)&&i<nc;
-      ctx.beginPath();ctx.arc(nd.x,nd.y,12,0,Math.PI*2);
-      ctx.fillStyle='#0d1225';ctx.fill();
-      ctx.strokeStyle=active?(circuit?'#a259ff':'#4f8eff'):'rgba(99,120,255,0.35)';ctx.lineWidth=1.5;
-      if(active){ctx.shadowColor=circuit?'#a259ff':'#4f8eff';ctx.shadowBlur=10;}
-      ctx.stroke();ctx.shadowBlur=0;
-      ctx.fillStyle=active?(circuit?'#a259ff':'#4f8eff'):'#445577';
+      ctx.beginPath();ctx.arc(nd.x,nd.y,12,0,Math.PI*2);ctx.fillStyle='#090d1e';ctx.fill();
+      ctx.strokeStyle=active?(circuit?'#b06aff':'#4f8eff'):'rgba(90,110,255,0.3)';ctx.lineWidth=1.6;
+      if(active){ctx.shadowColor=circuit?'#b06aff':'#4f8eff';ctx.shadowBlur=10;}ctx.stroke();ctx.shadowBlur=0;
+      ctx.fillStyle=active?(circuit?'#b06aff':'#4f8eff'):'#3d5070';
       ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
       ctx.fillText(String.fromCharCode(65+i),nd.x,nd.y);
     });
-    if(n===1) learnAnim1=requestAnimationFrame(frame);
-    else learnAnim2=requestAnimationFrame(frame);
-  }
-  frame();
+    if(num===1)learnAnim1=requestAnimationFrame(frame);else learnAnim2=requestAnimationFrame(frame);
+  }frame();
 }
 
 // =====================================================
 // INIT
 // =====================================================
-window.addEventListener('load', ()=>{
-  initHeroCanvas();
-  // Preload other pages lazily
-});
+window.addEventListener('load',()=>{initHeroCanvas();});
 </script>
 </body>
 </html>
